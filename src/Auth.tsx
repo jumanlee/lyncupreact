@@ -43,7 +43,7 @@ const AuthForm: React.FC = () => {
 
             setIsLoggedIn(true);
 
-            navigate('/chat');
+            navigate('/queue');
 
         }catch(error) {
             console.error(error);

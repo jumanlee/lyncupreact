@@ -1,20 +1,23 @@
 import React, { useState, useEffect, useRef } from 'react';
 import axiosInstance from './axiom'; // Import your Axios instance
-import { useLocation } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 
 
-const ChatRoom: React.FC = () => {
-    const [messages, setMessages] = useState<string[]>(['']);
-    const [inputMessage, setInputMessage] = useState<string>('');
-    const [members, setMembers] = useState<string[]>([])
+
+const Queue: React.FC = () => {
+
+    //consider using atob instead of localstorage for token storage, for later development
+    const navigate = useNavigate();
+
     const websocketRef = useRef<WebSocket | null>(null);
     const isWebSocketInitialised = useRef<boolean>(false);
-
-    const location = useLocation();
+    const [triggeredEventListener, setTriggeredEventListener] = useState<boolean>(false)
 
     const getValidAccessToken = async (): Promise<string | null> => {
         let accessToken = localStorage.getItem('access_token');
         const refreshToken = localStorage.getItem('refresh_token');
+
+
 
         if (!accessToken || !refreshToken) {
             console.error('Access or Refresh token not found in localStorage!');
@@ -60,24 +63,15 @@ const ChatRoom: React.FC = () => {
                 // Validate and retrieve token from localStorage using Axios
                 // const token = localStorage.getItem('access_token');
                 const token = await getValidAccessToken();
-                const { room_id } = location.state || {};
-                // const groupname = "hello_world";
 
                 if (!token) {
                     console.error('Token not found in localStorage!');
                     return;
                 }
 
-                if (!room_id) {
-                    console.error('no room_id received!');
-                    return;
 
-                }
-
-
-                //open Websocket connection
-                const url = `ws://localhost:8080/ws/chat/${room_id}/?token=${token}`;
-                console.log(url);
+                // Open WebSocket connection
+                const url = `ws://localhost:8080/ws/queue/?token=${token}`;
                 websocketRef.current = new WebSocket(url);
                 // websocketRef.current = websocket;
 
@@ -90,19 +84,14 @@ const ChatRoom: React.FC = () => {
                     const data = JSON.parse(event.data);
 
                     //the double rendering in the console is  caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
-                    if (data.hasOwnProperty("text") && data["text"]) {
-                        setMessages((prevMessages) => {
-                            console.log('Previous messages state:', prevMessages);
-                            console.log('New message being added:', data['text']);
-                            return [...prevMessages, data['text']]
-                        });
+
+                    if (data["room_id"]) {
+                        console.log("entered room_id navigate")
+                        navigate('/chat', { state: { room_id: data["room_id"] } })
+
+                    } else {
+                        console.log("no room_id!")
                     }
-
-                    if (data.hasOwnProperty("members") && data["members"]) {
-                        setMembers(data["members"])
-                    }
-
-
 
                 });
 
@@ -119,7 +108,12 @@ const ChatRoom: React.FC = () => {
             }
         };
 
-        fetchTokenAndConnectWebSocket();
+        if (triggeredEventListener) {
+            fetchTokenAndConnectWebSocket();
+
+        }
+
+
 
         return () => {
             // websocket.close();
@@ -128,52 +122,38 @@ const ChatRoom: React.FC = () => {
                 console.log('WebSocket closed in cleanup');
             }
         };
-    }, []);
-
-    const sendMessage = () => {
-        if (websocketRef.current && inputMessage.trim() !== '') {
-            const messageData = {
-                text: inputMessage,
-            };
-            websocketRef.current.send(JSON.stringify(messageData));
-            setInputMessage('');
-        }
-    };
+    }, [triggeredEventListener]);
 
     return (
-        <div>
-            <div>
-                <h1>Chat Room</h1>
-                <div style={{ border: '1px solid black', height: '300px', overflowY: 'scroll' }}>
-                    {messages.map((message, index) => (
-                        <div key={index}>
-                            <strong>{message}</strong>
-                        </div>
-                    ))}
+        <div className="flex justify-center items-center h-screen">
+            {!triggeredEventListener ?
+                <div>
+                    <button className="
+                        px-4 py-2 
+                        bg-blue-500 
+                        text-white 
+                        font-medium 
+                        rounded-md 
+                        shadow-md 
+                        hover:bg-blue-600 
+                        focus:outline-none focus:ring-2 focus:ring-blue-300 
+                        active:bg-blue-700 
+                        transition duration-200
+                    " onClick={() => setTriggeredEventListener(true)}>
+                                Queue
+                    </button>
                 </div>
-            </div>
-            <div>
-                <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Type a message..."
-                />
-                <button onClick={sendMessage}>Send</button>
-            </div>
-            <div className="border border-black h-[300px] overflow-y-scroll flex flex-col">
-                {members.map((message, index) => (
-                    <div key={index}>
-                        <strong>{message[1]}</strong> <strong>{message[2]}</strong>
-                    </div>
-                ))}
-
-            </div>
+                :
+                <div className="font-bold text-[25px]">
+                    Waiting to be matched...
+                </div>
+            }
         </div>
+
     );
 };
 
-export default ChatRoom;
+export default Queue;
 
 
 
