@@ -11,7 +11,7 @@ const Queue: React.FC = () => {
 
     const websocketRef = useRef<WebSocket | null>(null);
     const isWebSocketInitialised = useRef<boolean>(false);
-    const [triggeredEventListener, setTriggeredEventListener] = useState<boolean>(false)
+    const [triggeredEventListener, setTriggeredEventListener] = useState<boolean>(true)
 
     const getValidAccessToken = async (): Promise<string | null> => {
         let accessToken = localStorage.getItem('access_token');
@@ -60,7 +60,7 @@ const Queue: React.FC = () => {
             isWebSocketInitialised.current = true;
 
             try {
-                // Validate and retrieve token from localStorage using Axios
+
                 // const token = localStorage.getItem('access_token');
                 const token = await getValidAccessToken();
 
@@ -70,7 +70,6 @@ const Queue: React.FC = () => {
                 }
 
 
-                // Open WebSocket connection
                 const url = `ws://localhost:8080/ws/queue/?token=${token}`;
                 websocketRef.current = new WebSocket(url);
                 // websocketRef.current = websocket;

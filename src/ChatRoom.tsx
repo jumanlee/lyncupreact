@@ -1,179 +1,224 @@
-import React, { useState, useEffect, useRef } from 'react';
-import axiosInstance from './axiom'; // Import your Axios instance
-import { useLocation } from 'react-router-dom';
-
+import React, { useState, useEffect, useRef } from "react";
+import axiosInstance from "./axiom"; 
+import { useLocation } from "react-router-dom";
+//icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
 const ChatRoom: React.FC = () => {
-    const [messages, setMessages] = useState<string[]>(['']);
-    const [inputMessage, setInputMessage] = useState<string>('');
-    const [members, setMembers] = useState<string[]>([])
-    const websocketRef = useRef<WebSocket | null>(null);
-    const isWebSocketInitialised = useRef<boolean>(false);
+  const [messages, setMessages] = useState<string[]>([
+    "Morgan: Hello how are you?",
+    "Alex: I'm fine thank you",
+  ]);
+  const [inputMessage, setInputMessage] = useState<string>("");
+  const [members, setMembers] = useState<string[]>([
+    "Morgan",
+    "Alex",
+    "John",
+    "Donald",
+  ]);
+  const websocketRef = useRef<WebSocket | null>(null);
+  const isWebSocketInitialised = useRef<boolean>(false);
+  const [likes, setLikes] = useState(Array(members.length).fill(false));
 
-    const location = useLocation();
+  const location = useLocation();
 
-    const getValidAccessToken = async (): Promise<string | null> => {
-        let accessToken = localStorage.getItem('access_token');
-        const refreshToken = localStorage.getItem('refresh_token');
+  const getValidAccessToken = async (): Promise<string | null> => {
+    let accessToken = localStorage.getItem("access_token");
+    const refreshToken = localStorage.getItem("refresh_token");
 
-        if (!accessToken || !refreshToken) {
-            console.error('Access or Refresh token not found in localStorage!');
-            return null;
+    if (!accessToken || !refreshToken) {
+      console.error("Access or Refresh token not found in localStorage!");
+      return null;
+    }
+
+    //decode token and check expiry
+    const tokenParts = JSON.parse(atob(refreshToken.split(".")[1]));
+    const now = Math.ceil(Date.now() / 1000);
+
+    if (tokenParts.exp > now) {
+      try {
+        const response = await axiosInstance.post("/token/refresh/", {
+          refresh: refreshToken,
+        });
+        if (response.data.access) {
+          accessToken = response.data.access;
+          if (accessToken) {
+            localStorage.setItem("access_token", accessToken);
+            axiosInstance.defaults.headers[
+              "Authorization"
+            ] = `JWT ${accessToken}`;
+          }
+        }
+      } catch (error) {
+        console.error("Failed to refresh token:", error);
+        window.location.href = "/login/";
+        return null;
+      }
+    }
+
+    return accessToken;
+  };
+
+  useEffect(() => {
+    const fetchTokenAndConnectWebSocket = async () => {
+      //this conditional checking is necessary because React's Strict Mode causes useEffect to run twice in development, leading to multiple WebSocket connections and duplicated message event listeners. Note that if I refresh the web page, the isWebSocketInitialised.current becomes false.
+      if (isWebSocketInitialised.current) return;
+      isWebSocketInitialised.current = true;
+
+      try {
+        const token = await getValidAccessToken();
+        const { room_id } = location.state || {};
+        // const groupname = "hello_world";
+
+        if (!token) {
+          console.error("Token not found in localStorage!");
+          return;
         }
 
-        // Decode token and check expiry
-        const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));
-        const now = Math.ceil(Date.now() / 1000);
-
-        if (tokenParts.exp > now) {
-            try {
-                const response = await axiosInstance.post('/token/refresh/', {
-                    refresh: refreshToken,
-                });
-                if (response.data.access) {
-                    accessToken = response.data.access;
-                    if (accessToken) {
-                        localStorage.setItem('access_token', accessToken);
-                        axiosInstance.defaults.headers['Authorization'] = `JWT ${accessToken}`;
-
-                    }
-
-                }
-            } catch (error) {
-                console.error('Failed to refresh token:', error);
-                window.location.href = '/login/';
-                return null;
-            }
+        if (!room_id) {
+          console.error("no room_id received!");
+          return;
         }
 
-        return accessToken;
+        //open Websocket connection
+        const url = `ws://localhost:8080/ws/chat/${room_id}/?token=${token}`;
+        console.log(url);
+        websocketRef.current = new WebSocket(url);
+        // websocketRef.current = websocket;
+
+        websocketRef.current.addEventListener("open", () => {
+          console.log("WebSocket connection established");
+        });
+
+        websocketRef.current.addEventListener("message", (event) => {
+          console.log("Message from server:", event.data);
+          const data = JSON.parse(event.data);
+
+          //the double rendering in the console is  caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
+          if (data.hasOwnProperty("text") && data["text"]) {
+            setMessages((prevMessages) => {
+              console.log("Previous messages state:", prevMessages);
+              console.log("New message being added:", data["text"]);
+              return [...prevMessages, data["text"]];
+            });
+          }
+
+          if (data.hasOwnProperty("members") && data["members"]) {
+            setMembers(data["members"]);
+          }
+        });
+
+        websocketRef.current.addEventListener("error", (error) => {
+          console.error("WebSocket error:", error);
+        });
+
+        websocketRef.current.addEventListener("close", () => {
+          console.log("WebSocket connection closed");
+        });
+      } catch (error) {
+        console.error("Failed to validate token or connect WebSocket:", error);
+      }
     };
 
+    fetchTokenAndConnectWebSocket();
 
-    useEffect(() => {
-        const fetchTokenAndConnectWebSocket = async () => {
-            //this conditional checking is necessary because React's Strict Mode causes useEffect to run twice in development, leading to multiple WebSocket connections and duplicated message event listeners. Note that if I refresh the web page, the isWebSocketInitialised.current becomes false.
-            if (isWebSocketInitialised.current) return;
-            isWebSocketInitialised.current = true;
-
-            try {
-                // Validate and retrieve token from localStorage using Axios
-                // const token = localStorage.getItem('access_token');
-                const token = await getValidAccessToken();
-                const { room_id } = location.state || {};
-                // const groupname = "hello_world";
-
-                if (!token) {
-                    console.error('Token not found in localStorage!');
-                    return;
-                }
-
-                if (!room_id) {
-                    console.error('no room_id received!');
-                    return;
-
-                }
-
-
-                //open Websocket connection
-                const url = `ws://localhost:8080/ws/chat/${room_id}/?token=${token}`;
-                console.log(url);
-                websocketRef.current = new WebSocket(url);
-                // websocketRef.current = websocket;
-
-                websocketRef.current.addEventListener('open', () => {
-                    console.log('WebSocket connection established');
-                });
-
-                websocketRef.current.addEventListener('message', (event) => {
-                    console.log('Message from server:', event.data);
-                    const data = JSON.parse(event.data);
-
-                    //the double rendering in the console is  caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
-                    if (data.hasOwnProperty("text") && data["text"]) {
-                        setMessages((prevMessages) => {
-                            console.log('Previous messages state:', prevMessages);
-                            console.log('New message being added:', data['text']);
-                            return [...prevMessages, data['text']]
-                        });
-                    }
-
-                    if (data.hasOwnProperty("members") && data["members"]) {
-                        setMembers(data["members"])
-                    }
-
-
-
-                });
-
-                websocketRef.current.addEventListener('error', (error) => {
-                    console.error('WebSocket error:', error);
-                });
-
-                websocketRef.current.addEventListener('close', () => {
-                    console.log('WebSocket connection closed');
-                });
-
-            } catch (error) {
-                console.error('Failed to validate token or connect WebSocket:', error);
-            }
-        };
-
-        fetchTokenAndConnectWebSocket();
-
-        return () => {
-            // websocket.close();
-            if (websocketRef.current) {
-                websocketRef.current.close();
-                console.log('WebSocket closed in cleanup');
-            }
-        };
-    }, []);
-
-    const sendMessage = () => {
-        if (websocketRef.current && inputMessage.trim() !== '') {
-            const messageData = {
-                text: inputMessage,
-            };
-            websocketRef.current.send(JSON.stringify(messageData));
-            setInputMessage('');
-        }
+    return () => {
+      // websocket.close();
+      if (websocketRef.current) {
+        websocketRef.current.close();
+        console.log("WebSocket closed in cleanup");
+      }
     };
+  }, []);
 
-    return (
-        <div>
-            <div>
-                <h1>Chat Room</h1>
-                <div style={{ border: '1px solid black', height: '300px', overflowY: 'scroll' }}>
-                    {messages.map((message, index) => (
-                        <div key={index}>
-                            <strong>{message}</strong>
-                        </div>
-                    ))}
-                </div>
-            </div>
-            <div>
-                <input
-                    type="text"
-                    value={inputMessage}
-                    onChange={(e) => setInputMessage(e.target.value)}
-                    placeholder="Type a message..."
-                />
-                <button onClick={sendMessage}>Send</button>
-            </div>
-            <div className="border border-black h-[300px] overflow-y-scroll flex flex-col">
-                {members.map((message, index) => (
-                    <div key={index}>
-                        <strong>{message[1]}</strong> <strong>{message[2]}</strong>
-                    </div>
-                ))}
+  const sendMessage = () => {
+    if (websocketRef.current && inputMessage.trim() !== "") {
+      const messageData = {
+        text: inputMessage,
+      };
+      websocketRef.current.send(JSON.stringify(messageData));
+      setInputMessage("");
+    }
+  };
 
+  //event: React.KeyboardEvent<HTMLInputElement> means the keyboard event (e) happening on an <input> element
+  const handleKeyPress = (event: React.KeyboardEvent<HTMLInputElement>) => {
+    if (event.key == "Enter") {
+      sendMessage();
+    }
+  };
+
+  //event to handle likes
+  const toggleLike = (index: number) => {
+    setLikes((likes) => {
+      const newLikes = [...likes];
+      newLikes[index] = !newLikes[index];
+      return newLikes;
+    });
+  };
+
+  return (
+    <div className="flex h-screen bg-gray-100 text-gray-800">
+      {/* Chat Section */}
+      <div className="flex flex-col flex-grow p-4">
+        <h1 className="text-2xl font-bold text-purple-700 mb-4">
+          Chat Room ID: 12257
+        </h1>
+        <div className="flex-grow overflow-y-auto bg-white border border-gray-300 rounded-lg p-4 mb-4">
+          {messages.map((message, index) => (
+            <div key={index} className="mb-2 text-gray-800">
+              {message}
             </div>
+          ))}
         </div>
-    );
+        <div className="flex space-x-2">
+          <input
+            type="text"
+            value={inputMessage}
+            onChange={(e) => setInputMessage(e.target.value)}
+            placeholder="Type a message..."
+            onKeyDown={handleKeyPress}
+            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+          />
+          <button
+            onClick={sendMessage}
+            className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+          >
+            Send
+          </button>
+        </div>
+      </div>
+
+      {/* members section */}
+      <div className="w-1/4 bg-gray-200 border-l border-gray-300 p-4">
+        <h2 className="text-xl font-bold text-purple-700 mb-4">Members</h2>
+        <div className="space-y-2">
+          {members.map((member, index) => (
+            <div
+              key={index}
+              className="flex justify-between p-2 bg-white border border-gray-300 rounded-lg text-gray-800"
+            >
+              <span>{member}</span>
+
+              <button
+                onClick={() => toggleLike(index)}
+              >
+                <img
+                  width="20"
+                  height="20"
+                  src={
+                    likes[index]
+                      ? "https://img.icons8.com/fluency-systems-filled/50/7950F2/thumb-up.png"
+                      : "https://img.icons8.com/fluency-systems-regular/50/7950F2/thumb-up.png"
+                  }
+                  alt="thumb-up"
+                />
+              </button>
+            </div>
+          ))}
+        </div>
+      </div>
+    </div>
+  );
 };
 
 export default ChatRoom;
-
-
-
