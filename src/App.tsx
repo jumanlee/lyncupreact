@@ -13,7 +13,7 @@ const App: React.FC = ()=>  {
       {/* <ChatRoom /> */}
 
       <Routes>
-        <Route path="/" element={<ChatRoom />} />
+        <Route path="/" element={<AuthForm />} />
         <Route path="/chat" element={<ChatRoom />} />
         <Route path="/auth" element={<AuthForm />} />
         <Route path="/queue" element={<Queue />} />

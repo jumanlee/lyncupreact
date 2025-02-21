@@ -9,7 +9,8 @@ const axiosInstance: AxiosInstance = axios.create({
     timeout: 5000,
     headers: {
         Authorization: localStorage.getItem('access_token')
-            ? `JWT ${localStorage.getItem('access_token')}`
+            //IMPORTANT, for JWT token, it starts with Bearer, NOT Jwt as previously placed!! Remember to also update other Jwt below! This caused me a lot of problems with API failed requests, which automatically appended :<int> to api link! 
+            ? `Bearer ${localStorage.getItem('access_token')}`
             : null,
         'Content-Type': 'application/json',
         accept: 'application/json',
@@ -63,13 +64,13 @@ axiosInstance.interceptors.response.use(
                             localStorage.setItem('access_token', response.data.access);
                             localStorage.setItem('refresh_token', response.data.refresh);
 
-                            axiosInstance.defaults.headers['Authorization'] = `JWT ${response.data.access}`;
+                            axiosInstance.defaults.headers['Authorization'] = `Bearer ${response.data.access}`;
 
                             //initialise headers if it doesn't exist
                             if (!originalRequest.headers) {
                                 originalRequest.headers = {}; //initialise headers if it doesn't exist
                             }
-                            originalRequest.headers['Authorization'] = `JWT ${response.data.access}`;
+                            originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
 
                             return axiosInstance(originalRequest);
                         }

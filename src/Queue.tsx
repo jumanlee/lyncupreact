@@ -11,7 +11,7 @@ const Queue: React.FC = () => {
 
     const websocketRef = useRef<WebSocket | null>(null);
     const isWebSocketInitialised = useRef<boolean>(false);
-    const [triggeredEventListener, setTriggeredEventListener] = useState<boolean>(true)
+    const [triggeredEventListener, setTriggeredEventListener] = useState<boolean>(false)
 
     const getValidAccessToken = async (): Promise<string | null> => {
         let accessToken = localStorage.getItem('access_token');
@@ -37,7 +37,7 @@ const Queue: React.FC = () => {
                     accessToken = response.data.access;
                     if (accessToken) {
                         localStorage.setItem('access_token', accessToken);
-                        axiosInstance.defaults.headers['Authorization'] = `JWT ${accessToken}`;
+                        axiosInstance.defaults.headers['Authorization'] = `Bearer ${accessToken}`;
 
                     }
 

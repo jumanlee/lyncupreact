@@ -1,26 +1,23 @@
 import React, { useState, useEffect, useRef } from "react";
-import axiosInstance from "./axiom"; 
+import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
 const ChatRoom: React.FC = () => {
-  const [messages, setMessages] = useState<string[]>([
-    "Morgan: Hello how are you?",
-    "Alex: I'm fine thank you",
-  ]);
+  const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState<string>("");
-  const [members, setMembers] = useState<string[]>([
-    "Morgan",
-    "Alex",
-    "John",
-    "Donald",
-  ]);
+  const [members, setMembers] = useState<
+    { user_id: number; firstname: string; lastname: string }[]
+  >([]);
   const websocketRef = useRef<WebSocket | null>(null);
   const isWebSocketInitialised = useRef<boolean>(false);
-  const [likes, setLikes] = useState(Array(members.length).fill(false));
+  const [likes, setLikes] = useState<Record<number, boolean>>({});
 
   const location = useLocation();
 
+  //adapted code from https://medium.com/@velja/token-refresh-with-axios-interceptors-for-a-seamless-authentication-experience-854b06064bde
+  //note: when a function is declared as async, it automatically returns a Promise, even if there’s no new Promise() inside
+  //returning a Promise means that a function does not return a value immediately, but instead returns a Promise object that will resolve (success) or reject (failure) in the future.
   const getValidAccessToken = async (): Promise<string | null> => {
     let accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
@@ -45,7 +42,7 @@ const ChatRoom: React.FC = () => {
             localStorage.setItem("access_token", accessToken);
             axiosInstance.defaults.headers[
               "Authorization"
-            ] = `JWT ${accessToken}`;
+            ] = `Bearer ${accessToken}`;
           }
         }
       } catch (error) {
@@ -55,6 +52,7 @@ const ChatRoom: React.FC = () => {
       }
     }
 
+    //the accessToken itself is NOT a Promise. Instead the function getValidAccessToken() returns a Promise that eventually resolves to accessToken (a string or null).
     return accessToken;
   };
 
@@ -102,9 +100,17 @@ const ChatRoom: React.FC = () => {
             });
           }
 
-          if (data.hasOwnProperty("members") && data["members"]) {
-            setMembers(data["members"]);
+          if ("members" in data && data["members"]) {
+            // data["members"] format is: {"members": [[1, "Youknow", "Who"]]}
+            setMembers(
+              data["members"].map(
+                ([user_id, firstname, lastname]: [number, string, string]) =>
+                  //convert the array to an object with keys user_id, firstname, lastname for easier management
+                  ({ user_id, firstname, lastname })
+              )
+            );
           }
+          //The below is to close the websocket paranthesis, remember this bit is all part of one websocket ref
         });
 
         websocketRef.current.addEventListener("error", (error) => {
@@ -148,12 +154,30 @@ const ChatRoom: React.FC = () => {
   };
 
   //event to handle likes
-  const toggleLike = (index: number) => {
-    setLikes((likes) => {
-      const newLikes = [...likes];
-      newLikes[index] = !newLikes[index];
-      return newLikes;
-    });
+  const toggleLike = (user_id: number) => {
+    //update like state in database with API
+
+    axiosInstance
+      .post("/users/like/", { user_to: user_id })
+      .then((response) => {
+        console.log(response);
+        //update the likes state
+        //check if the user_id is already in likes, if not, create with default false
+        setLikes((prevLikes) => {
+          //if user_id not in prevLikes dict, ?? will mean that prevLikeBool is assigned "false"
+          //note that unlike in Python, if key is not in obj, javasript returns undefined, not a keyerror.
+          const prevLikeBool = prevLikes[user_id] ?? false;
+          const newLikeBool = !prevLikeBool;
+
+          //wrap user_id in [] so that it renders dynamically and not put literal "user_id" as key. This previously caused lots of problems that are now fixed.
+          const newLikes = { ...prevLikes, [user_id]: newLikeBool };
+          return newLikes;
+        });
+      })
+      .catch((error) => {
+        console.error(error);
+        console.error("failed api request like user with user_id:", user_id);
+      });
   };
 
   return (
@@ -194,19 +218,17 @@ const ChatRoom: React.FC = () => {
         <div className="space-y-2">
           {members.map((member, index) => (
             <div
-              key={index}
+              key={member.user_id}
               className="flex justify-between p-2 bg-white border border-gray-300 rounded-lg text-gray-800"
             >
-              <span>{member}</span>
-
-              <button
-                onClick={() => toggleLike(index)}
-              >
+              <span>{member.firstname}</span>
+              <span>{member.lastname}</span>
+              <button onClick={() => toggleLike(member.user_id)}>
                 <img
                   width="20"
                   height="20"
                   src={
-                    likes[index]
+                    likes[member.user_id]
                       ? "https://img.icons8.com/fluency-systems-filled/50/7950F2/thumb-up.png"
                       : "https://img.icons8.com/fluency-systems-regular/50/7950F2/thumb-up.png"
                   }
