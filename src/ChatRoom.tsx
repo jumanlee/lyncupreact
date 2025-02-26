@@ -3,6 +3,8 @@ import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
+import jwtDecode from "jwt-decode";
+
 const ChatRoom: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState<string>("");
@@ -12,6 +14,7 @@ const ChatRoom: React.FC = () => {
   const websocketRef = useRef<WebSocket | null>(null);
   const isWebSocketInitialised = useRef<boolean>(false);
   const [likes, setLikes] = useState<Record<number, boolean>>({});
+  const [selfUserId, setSelfUserId] = useState<string | null>("");
 
   const location = useLocation();
 
@@ -125,7 +128,20 @@ const ChatRoom: React.FC = () => {
       }
     };
 
+    //store self user id in hook
+    const getUserId = () => {
+      const self_user_id = localStorage.getItem("user_id");
+      if (self_user_id) {
+        setSelfUserId(self_user_id);
+      } else {
+        console.log(
+          "Failed to store self user id in hook as self_user_id is null"
+        );
+      }
+    };
+
     fetchTokenAndConnectWebSocket();
+    getUserId();
 
     return () => {
       // websocket.close();
@@ -221,20 +237,24 @@ const ChatRoom: React.FC = () => {
               key={member.user_id}
               className="flex justify-between p-2 bg-white border border-gray-300 rounded-lg text-gray-800"
             >
-              <span>{member.firstname}</span>
-              <span>{member.lastname}</span>
-              <button onClick={() => toggleLike(member.user_id)}>
-                <img
-                  width="20"
-                  height="20"
-                  src={
-                    likes[member.user_id]
-                      ? "https://img.icons8.com/fluency-systems-filled/50/7950F2/thumb-up.png"
-                      : "https://img.icons8.com/fluency-systems-regular/50/7950F2/thumb-up.png"
-                  }
-                  alt="thumb-up"
-                />
-              </button>
+              <span>
+                {member.firstname} {member.lastname}
+              </span>
+
+              {String(selfUserId) != String(member.user_id) ? (
+                <button onClick={() => toggleLike(member.user_id)}>
+                  <img
+                    width="20"
+                    height="20"
+                    src={
+                      likes[member.user_id]
+                        ? "https://img.icons8.com/fluency-systems-filled/50/7950F2/thumb-up.png"
+                        : "https://img.icons8.com/fluency-systems-regular/50/7950F2/thumb-up.png"
+                    }
+                    alt="thumb-up"
+                  />
+                </button>
+              ) : null}
             </div>
           ))}
         </div>
