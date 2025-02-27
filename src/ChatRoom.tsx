@@ -3,8 +3,6 @@ import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
-import jwtDecode from "jwt-decode";
-
 const ChatRoom: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState<string>("");
@@ -147,6 +145,9 @@ const ChatRoom: React.FC = () => {
       // websocket.close();
       if (websocketRef.current) {
         websocketRef.current.close();
+
+        //reset upon cleanup
+        isWebSocketInitialised.current = false;
         console.log("WebSocket closed in cleanup");
       }
     };
@@ -171,10 +172,16 @@ const ChatRoom: React.FC = () => {
 
   //event to handle likes
   const toggleLike = (user_id: number) => {
+
+    //set post request string to be passed into .post
+    //if the user_to has previously been liked, we need to unlike
+    //otherwise, if not previously liked, it means user_from wants to like
+    const postString = likes[user_id] ? "/users/unlike/" : "/users/like/";
+    
     //update like state in database with API
 
     axiosInstance
-      .post("/users/like/", { user_to: user_id })
+      .post(postString, { user_to: user_id })
       .then((response) => {
         console.log(response);
         //update the likes state
