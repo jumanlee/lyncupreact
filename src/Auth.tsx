@@ -1,7 +1,8 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import axiosInstance from "./axiom";
 import { useNavigate } from "react-router-dom";
-import {jwtDecode} from "jwt-decode";
+import { jwtDecode } from "jwt-decode";
+import { useAuth } from "./App";
 
 //css library component from https://tailwindui.com/components/application-ui/forms/sign-in-forms
 
@@ -11,7 +12,7 @@ interface LoginData {
 }
 
 const AuthForm: React.FC = () => {
-  const [isLogin, setIsLogin] = useState<boolean>(true);
+  // const [isLogin, setIsLogin] = useState<boolean>(true);
   const [isLoggedIn, setIsLoggedIn] = useState<boolean>(false);
 
   const [loginData, setLoginData] = useState<LoginData>({
@@ -19,6 +20,7 @@ const AuthForm: React.FC = () => {
     password: "",
   });
 
+  const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
 
   const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -39,7 +41,7 @@ const AuthForm: React.FC = () => {
 
       console.log("Response from server:", response.data);
 
-      setIsLoggedIn(true);
+      setIsAuthenticated(true);
 
       //save the user id in local storage
       try {
