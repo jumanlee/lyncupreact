@@ -6,6 +6,7 @@ import ChatRoom from "./ChatRoom";
 import Queue from "./Queue";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./NavBar";
+import Profile from "./Profile";
 import axiosInstance from "./axiom";
 
 //Note: all pages are formatted with Prettier extension
@@ -49,7 +50,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     //this section is for checking if the token actually is still valid by calling some api, if not then isAuthenticated is set to false
 
     axiosInstance
-      .post("/users/showprofile/")
+      .get("/users/testapi/")
       .then(() => {
         console.log("validateToken() successful");
         setIsAuthenticated(true);
@@ -121,6 +122,14 @@ const App: React.FC = () => {
               element={
                 <AuthRoute>
                   <Queue />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/profile"
+              element={
+                <AuthRoute>
+                  <Profile />
                 </AuthRoute>
               }
             />

@@ -39,8 +39,6 @@ const AuthForm: React.FC = () => {
       localStorage.setItem("access_token", response.data.access);
       localStorage.setItem("refresh_token", response.data.refresh);
 
-      console.log("Response from server:", response.data);
-
       setIsAuthenticated(true);
 
       //save the user id in local storage
