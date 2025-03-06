@@ -32,7 +32,7 @@ const NavBar: React.FC = () => {
     localStorage.removeItem("user_id");
     setIsAuthenticated(false);
 
-    // navigate("/");
+    navigate("/");
   };
 
   //event listener for when mouse clicks outside the dropdown menu, the dropdown menu closes
