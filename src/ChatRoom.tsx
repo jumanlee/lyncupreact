@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
+import { useNavigate } from 'react-router-dom';
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
 const ChatRoom: React.FC = () => {
@@ -15,6 +16,7 @@ const ChatRoom: React.FC = () => {
   const [selfUserId, setSelfUserId] = useState<string | null>("");
 
   const location = useLocation();
+  const navigate = useNavigate();
 
   //adapted code from https://medium.com/@velja/token-refresh-with-axios-interceptors-for-a-seamless-authentication-experience-854b06064bde
   //note: when a function is declared as async, it automatically returns a Promise, even if there’s no new Promise() inside
@@ -48,7 +50,8 @@ const ChatRoom: React.FC = () => {
         }
       } catch (error) {
         console.error("Failed to refresh token:", error);
-        window.location.href = "/login/";
+        // window.location.href = "/login/";
+        navigate("/");
         return null;
       }
     }

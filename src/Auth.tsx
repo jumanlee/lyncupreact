@@ -30,9 +30,9 @@ const AuthForm: React.FC = () => {
   };
 
   //unlike ChangeEvent, often don't need to specify a type parameter with FormEvent when it's used with form submission because form submissions are generally handled at the form level, not on individual elements within the form.
-  const handleLoginSubmit = async (e: FormEvent) => {
+  const handleLoginSubmit = async (event: React.FormEvent) => {
     //prevent default refresh
-    e.preventDefault();
+    event.preventDefault();
 
     try {
       const response = await axiosInstance.post("token/", loginData);
@@ -72,10 +72,10 @@ const AuthForm: React.FC = () => {
 
   //useEffect to check if the user is already logged in or not. If already logged in, it the page will display "welcome to LyncUp" otherwise, it will show the form required to log in. Remember, I'm using dummy tokens here.
   useEffect(() => {
-    const accessToken = localStorage.getItem("access_token");
-    if (accessToken) {
-      setIsLoggedIn(true);
-    }
+    // const accessToken = localStorage.getItem("access_token");
+    // if (accessToken) {
+    //   setIsLoggedIn(true);
+    // }
   }, []);
 
   return (

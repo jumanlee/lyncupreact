@@ -50,28 +50,49 @@ const Profile: React.FC = () => {
   }, []);
 
   //remember change event can be either text area(edit) or input
-  const handleChange = (event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>) => {
+  const handleChange = (
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+  ) => {
+    //data structure:
+    // {"appuser_name":{"firstname":"Harry","lastname":"Potter"},"aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M","organisation_details":{"name":"Microsoft Corporation","description":"Technology company"}}
 
-    const {name, value} = event.target;
+    const { name, value } = event.target;
 
-    if (name == "firstname" || name == "lastname")
-    {
-
+    if (name == "firstname" || name == "lastname") {
+      // key = {appuser_name: name}
+      setEditProfileData((prevEditProfileData) => {
+        //we need this if condition as prevEditProfile could be null, if its null, trying to access a key will throw an error!
+        if (!prevEditProfileData) {
+          return prevEditProfileData;
+        }
+        return {
+          ...prevEditProfileData,
+          appuser_name: {
+            //need to use ...prevEditProfileData.appuser_name as we need to preserve everything else in appuser_name that doesn't require change! because the appuser_name's associated value is also an object!
+            ...prevEditProfileData.appuser_name,
+            [name]: value,
+          },
+        };
+      });
+    } else {
+      setEditProfileData((prevEditProfileData) => {
+        if (!prevEditProfileData) {
+          return prevEditProfileData;
+        }
+        return {
+          ...prevEditProfileData,
+          [name]: value,
+        };
+      });
     }
-    setEditProfileData(prevEditProfileData => ({
-        ...prevEditProfileData,
-        [event.target.name]: event.target.value
-    }));
-
   };
 
   const handleSubmit = (event: React.FormEvent) => {
     //prevent default behaviour of reloading page after submission
     event.preventDefault();
 
-
     axiosInstance
-      .post("updateprofile/", {editProfileData})
+      .post("updateprofile/", { editProfileData })
       .then((response) => {
         console.log("updateprofile API success!");
         setProfileData(response.data);
@@ -80,7 +101,6 @@ const Profile: React.FC = () => {
       .catch((error) => {
         console.error("updateprofile API failed", error);
       });
-
   };
 
   return (
@@ -104,7 +124,7 @@ const Profile: React.FC = () => {
           <input
             type="text"
             name="lastname"
-            value={editProfileData?.appuser_name.lastname ?? ""} 
+            value={editProfileData?.appuser_name.lastname ?? ""}
             onChange={handleChange}
           ></input>
         ) : (

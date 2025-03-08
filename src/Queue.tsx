@@ -44,7 +44,8 @@ const Queue: React.FC = () => {
                 }
             } catch (error) {
                 console.error('Failed to refresh token:', error);
-                window.location.href = '/login/';
+                // window.location.href = '/login/';
+                navigate("/");
                 return null;
             }
         }
