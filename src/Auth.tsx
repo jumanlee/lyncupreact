@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
 import axiosInstance from "./axiom";
 import { useNavigate } from "react-router-dom";
-import { jwtDecode } from "jwt-decode";
+import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useAuth } from "./App";
 
 //css library component from https://tailwindui.com/components/application-ui/forms/sign-in-forms
@@ -41,9 +41,14 @@ const AuthForm: React.FC = () => {
 
       setIsAuthenticated(true);
 
+      //define the payload type
+      interface CustomJwtPayLoad extends JwtPayload {
+        user_id: number;
+      }
+
       //save the user id in local storage
       try {
-        const decoded_token = jwtDecode(response.data.access);
+        const decoded_token = jwtDecode<CustomJwtPayLoad>(response.data.access);
         localStorage.setItem("user_id", decoded_token.user_id.toString());
       } catch (error) {
         console.error(error);

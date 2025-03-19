@@ -52,28 +52,40 @@ const NavBar: React.FC = () => {
   }, [isAccountOpen, handleClickOutside]);
 
   return (
-    <div className="min-h-screen flex flex-col">
+    <div className="min-h-screen flex flex-col bg-gray-100">
       {/* Navbar that is on every page */}
-      <nav className="bg-purple-700 text-white p-4">
+      <nav className="bg-gray-900 text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
-          <Link to="/" className="text-xl font-bold hover:cursor-pointer">
+          <Link
+            to="/"
+            className="text-xl text-gray-400 font-semibold hover:opacity-80"
+          >
             LyncUp
           </Link>
           <div className="flex space-x-4 items-center">
-            <Link to="/" className="hover:cursor-pointer">
+            <Link
+              to="/"
+              className="hover:opacity-80 text-gray-400 font-semibold "
+            >
               Chat
             </Link>
-            <Link to="/" className="hover:cursor-pointer">
+            <Link
+              to="/"
+              className="hover:opacity-80 text-gray-400 font-semibold "
+            >
               Friends
             </Link>
-            <Link to="/" className="hover:cursor-pointer">
+            <Link
+              to="/"
+              className="hover:opacity-80 text-gray-400 font-semibold "
+            >
               Messages
             </Link>
 
             {/* Account has dropdown accordion  */}
             <div className="relative" ref={dropdownRef}>
               <button
-                className="hover:cursor-pointer focus:outline-none"
+                className="hover:opacity-80 focus:outline-none text-gray-400 font-semibold"
                 onClick={() => setIsAccountOpen(!isAccountOpen)}
               >
                 Account
@@ -81,23 +93,28 @@ const NavBar: React.FC = () => {
 
               {isAccountOpen ? (
                 //ref={dropdownRef} tells React to assign a reference to the <div> after the component renders. dropdownRef.current is updated automatically by React after the component has mounted, ref expects a ref object (dropdownRef), not its .current property, this caused me problems!
-                <div className="absolute left-0 mt-2 w-37 bg-white text-black shadow-md rounded-lg">
+                <div className="absolute right-0 mt-2 w-36 bg-gray-800 text-gray-200 shadow-md rounded min-w-max overflow-hidden whitespace-nowrap">
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-200 rounded-lg"
+                    className="block px-4 py-2 hover:bg-gray-700"
+                    onClick={() => setIsAccountOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/settings"
-                    className="block px-4 py-2 hover:bg-gray-200 rounded-lg"
+                    className="block px-4 py-2 hover:bg-gray-700"
+                    onClick={() => setIsAccountOpen(false)}
                   >
                     Settings
                   </Link>
                   {/* use <button> here because I need action like onClick */}
                   <button
-                    onClick={logout}
-                    className="block px-4 py-2 hover:bg-gray-200 rounded-lg"
+                    onClick={() => {
+                      logout();
+                      setIsAccountOpen(false);
+                    }}
+                    className="block w-full text-left px-4 py-2 hover:bg-gray-700"
                   >
                     Logout
                   </button>
@@ -110,12 +127,12 @@ const NavBar: React.FC = () => {
 
       {/* The main app */}
       {/* outlet is a placeholder for where the nested child routes is rendered */}
-      <main>
+      <main className="flex-grow">
         {/* the child routes render here */}
         <Outlet />
       </main>
 
-      <footer className="bg-purple-700 text-white p-4 text-center">
+      <footer className="bg-gray-900 text-gray-400 font-semibold p-4 text-center mt-auto">
         © 2025 LyncUp. All rights reserved.
       </footer>
     </div>

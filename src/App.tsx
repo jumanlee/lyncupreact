@@ -59,8 +59,13 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
         console.log("validateToken() failed");
 
         //removeItem here is important! without it, this gave me problems when the token is already expired, as we initialise  const [isAuthenticated, setIsAuthenticated] = useState<boolean>( Boolean(localStorage.getItem("access_token")). 
-        // Then, when validateToken function runs, it fails the API check and sets isAuthenticated to false. This state “flip‐flop” between true (from the expired token) and false (after the check) can lead to a redirect loop.
+        // Then, when validateToken function runs, it fails the API check and sets isAuthenticated to false: But then because we have an expired token, there is a token in storage, so we keep executing validateToken, which causes repeated execution of validateToken!: 
+        // const validateToken = async () => {
+        //     const token = localStorage.getItem("access_token");
+        //     if (!token) { 
+        //Therefore it's important we must remove the expired tokens!
         localStorage.removeItem("access_token");
+        localStorage.removeItem("refresh_token");
         setIsAuthenticated(false);
       });
   };

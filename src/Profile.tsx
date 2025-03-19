@@ -3,11 +3,7 @@ import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
 
 const Profile: React.FC = () => {
-  // {"appuser_name":{"firstname":"Harry","lastname":"Potter"},"aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M","organisation_details":{"name":"Microsoft Corporation","description":"Technology company"}}
-  interface AppUserName {
-    firstname: string | null;
-    lastname: string | null;
-  }
+
 
   interface OrganisationDetails {
     name: string | null;
@@ -15,7 +11,8 @@ const Profile: React.FC = () => {
   }
 
   interface ProfileData {
-    appuser_name: AppUserName;
+    firstname: string | null;
+    lastname: string | null;
     aboutme: string | null;
     citytown: string | null;
     country: string | null;
@@ -35,10 +32,10 @@ const Profile: React.FC = () => {
   const [edit, setEdit] = useState<Boolean>(false);
 
   useEffect(() => {
-    const user_id = localStorage.get("user_id");
+    const user_id = localStorage.getItem("user_id");
 
     axiosInstance
-      .get(`showprofile/${user_id}`)
+      .get(`users/showprofile/${user_id}`)
       .then((response) => {
         console.log("showprofile API success!");
         setProfileData(response.data);
@@ -54,37 +51,19 @@ const Profile: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     //data structure:
-    // {"appuser_name":{"firstname":"Harry","lastname":"Potter"},"aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M","organisation_details":{"name":"Microsoft Corporation","description":"Technology company"}}
+    // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M","organisation_details":{"name":"Microsoft Corporation","description":"Technology company"}}
 
     const { name, value } = event.target;
 
-    if (name == "firstname" || name == "lastname") {
-      // key = {appuser_name: name}
-      setEditProfileData((prevEditProfileData) => {
-        //we need this if condition as prevEditProfile could be null, if its null, trying to access a key will throw an error!
-        if (!prevEditProfileData) {
-          return prevEditProfileData;
-        }
-        return {
-          ...prevEditProfileData,
-          appuser_name: {
-            //need to use ...prevEditProfileData.appuser_name as we need to preserve everything else in appuser_name that doesn't require change! because the appuser_name's associated value is also an object!
-            ...prevEditProfileData.appuser_name,
-            [name]: value,
-          },
-        };
-      });
-    } else {
-      setEditProfileData((prevEditProfileData) => {
-        if (!prevEditProfileData) {
-          return prevEditProfileData;
-        }
-        return {
-          ...prevEditProfileData,
-          [name]: value,
-        };
-      });
-    }
+    setEditProfileData((prevEditProfileData) => {
+      if (!prevEditProfileData) {
+        return prevEditProfileData;
+      }
+      return {
+        ...prevEditProfileData,
+        [name]: value,
+      };
+    });
   };
 
   const handleSubmit = (event: React.FormEvent) => {
@@ -111,11 +90,11 @@ const Profile: React.FC = () => {
           <input
             type="text"
             name="firstname"
-            value={editProfileData?.appuser_name.firstname ?? ""}
+            value={editProfileData?.firstname ?? ""}
             onChange={handleChange}
           ></input>
         ) : (
-          <span>{profileData?.appuser_name.firstname}</span>
+          <span>{profileData?.firstname}</span>
         )}
       </div>
       <div>
@@ -124,11 +103,11 @@ const Profile: React.FC = () => {
           <input
             type="text"
             name="lastname"
-            value={editProfileData?.appuser_name.lastname ?? ""}
+            value={editProfileData?.lastname ?? ""}
             onChange={handleChange}
           ></input>
         ) : (
-          <span>{profileData?.appuser_name.lastname}</span>
+          <span>{profileData?.lastname}</span>
         )}
       </div>
       <div>

@@ -17,6 +17,20 @@ const axiosInstance: AxiosInstance = axios.create({
     },
 });
 
+//Intercept the request before it's being sent! This part is IMPORTANT, is to ensure this interceptor to make sure to always use latest token. e.g. When user logs in and gets a new token, the previously expired token must be replaced, therefore this:
+axiosInstance.interceptors.request.use(
+    //config is an object that contains all the details of the hhtp request before it is sent.
+    (config) => {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
+      return config;
+    },
+    (error) => Promise.reject(error)
+  );
+  
+
 //Handle Token Expiry and Refresh Automatically, Handle Network or CORS Errors, Retry the Original Request, Centralized Error Handling
 axiosInstance.interceptors.response.use(
     (response: AxiosResponse) => response,
@@ -36,7 +50,7 @@ axiosInstance.interceptors.response.use(
             error.response.status === 401 &&
             originalRequest.url === baseURL + 'token/refresh/'
         ) {
-            window.location.href = '/login/';
+            window.location.href = '/';
             return Promise.reject(error);
         }
 
@@ -76,16 +90,16 @@ axiosInstance.interceptors.response.use(
                         }
                     } catch (err) {
                         console.log(err);
-                        window.location.href = '/login/';
+                        window.location.href = '/';
                         return Promise.reject(err);
                     }
                 } else {
                     console.log('Refresh token is expired', tokenParts.exp, now);
-                    window.location.href = '/login/';
+                    window.location.href = '/';
                 }
             } else {
                 console.log('Refresh token not available.');
-                window.location.href = '/login/';
+                window.location.href = '/';
             }
         }
 
