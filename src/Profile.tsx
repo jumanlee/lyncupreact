@@ -3,12 +3,10 @@ import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
 
 const Profile: React.FC = () => {
-
-
-  interface OrganisationDetails {
-    name: string | null;
-    description: string | null;
-  }
+  // interface OrganisationDetails {
+  //   name: string | null;
+  //   id: number | null;
+  // }
 
   interface ProfileData {
     firstname: string | null;
@@ -18,7 +16,8 @@ const Profile: React.FC = () => {
     country: string | null;
     age: number | null;
     gender: "M" | "F" | "NA";
-    organisation_details: OrganisationDetails;
+    organisation_id: number | null;
+    organisation_name: string | null;
   }
 
   //actualy profile data in the database
@@ -51,7 +50,7 @@ const Profile: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     //data structure:
-    // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M","organisation_details":{"name":"Microsoft Corporation","description":"Technology company"}}
+    // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
 
     const { name, value } = event.target;
 
@@ -70,8 +69,9 @@ const Profile: React.FC = () => {
     //prevent default behaviour of reloading page after submission
     event.preventDefault();
 
+    //Don't send {editProfileData}, send editProfileData as Django serializer expects the fields at the root level, not inside an "editProfileData" object!
     axiosInstance
-      .post("updateprofile/", { editProfileData })
+      .put("users/updateprofile/", editProfileData)
       .then((response) => {
         console.log("updateprofile API success!");
         setProfileData(response.data);
@@ -83,106 +83,132 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit}>
-      <div>
-        <label>First Name:</label>
-        {edit ? (
-          <input
-            type="text"
-            name="firstname"
-            value={editProfileData?.firstname ?? ""}
-            onChange={handleChange}
-          ></input>
-        ) : (
-          <span>{profileData?.firstname}</span>
-        )}
-      </div>
-      <div>
-        <label>Last Name:</label>
-        {edit ? (
-          <input
-            type="text"
-            name="lastname"
-            value={editProfileData?.lastname ?? ""}
-            onChange={handleChange}
-          ></input>
-        ) : (
-          <span>{profileData?.lastname}</span>
-        )}
-      </div>
-      <div>
-        <label>About me:</label>
-        {edit ? (
-          <input
-            type="text"
-            name="aboutme"
-            value={editProfileData?.aboutme ?? ""}
-            onChange={handleChange}
-          ></input>
-        ) : (
-          <span>{profileData?.aboutme}</span>
-        )}
-      </div>
-      <div>
-        <label>City/Town:</label>
-        {edit ? (
-          <input
-            type="text"
-            name="citytown"
-            value={editProfileData?.citytown ?? ""}
-            onChange={handleChange}
-          ></input>
-        ) : (
-          <span>{profileData?.citytown}</span>
-        )}
-      </div>
+    <>
+      <form onSubmit={handleSubmit}>
+        <div>
+          <label>First Name: </label>
+          {edit ? (
+            <input
+              type="text"
+              name="firstname"
+              value={editProfileData?.firstname ?? ""}
+              onChange={handleChange}
+            ></input>
+          ) : (
+            <span>{profileData?.firstname}</span>
+          )}
+        </div>
+        <div>
+          <label>Last Name: </label>
+          {edit ? (
+            <input
+              type="text"
+              name="lastname"
+              value={editProfileData?.lastname ?? ""}
+              onChange={handleChange}
+            ></input>
+          ) : (
+            <span>{profileData?.lastname}</span>
+          )}
+        </div>
+        <div>
+          <label>About me: </label>
+          {edit ? (
+            <input
+              type="text"
+              name="aboutme"
+              value={editProfileData?.aboutme ?? ""}
+              onChange={handleChange}
+            ></input>
+          ) : (
+            <span>{profileData?.aboutme}</span>
+          )}
+        </div>
+        <div>
+          <label>City/Town: </label>
+          {edit ? (
+            <input
+              type="text"
+              name="citytown"
+              value={editProfileData?.citytown ?? ""}
+              onChange={handleChange}
+            ></input>
+          ) : (
+            <span>{profileData?.citytown}</span>
+          )}
+        </div>
 
-      <div>
-        <label>Country:</label>
-        {edit ? (
-          <input
-            type="text"
-            name="country"
-            value={editProfileData?.country ?? ""}
-            onChange={handleChange}
-          ></input>
-        ) : (
-          <span>{profileData?.country}</span>
-        )}
-      </div>
+        <div>
+          <label>Country: </label>
+          {edit ? (
+            <input
+              type="text"
+              name="country"
+              value={editProfileData?.country ?? ""}
+              onChange={handleChange}
+            ></input>
+          ) : (
+            <span>{profileData?.country}</span>
+          )}
+        </div>
 
-      <div>
-        <label>Age:</label>
-        {edit ? (
-          <input
-            type="text"
-            name="age"
-            value={editProfileData?.age ?? ""}
-            onChange={handleChange}
-          ></input>
-        ) : (
-          <span>{profileData?.age}</span>
-        )}
-      </div>
+        <div>
+          <label>Age: </label>
+          {edit ? (
+            <input
+              type="text"
+              name="age"
+              value={editProfileData?.age ?? ""}
+              onChange={handleChange}
+            ></input>
+          ) : (
+            <span>{profileData?.age}</span>
+          )}
+        </div>
 
+        <div>
+          <label>Gender: </label>
+          {edit ? (
+            <select
+              name="gender"
+              //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
+              value={editProfileData?.gender}
+              onChange={handleChange}
+            >
+              <option value="M">Male</option>
+              <option value="F">Female</option>
+              <option value="NA">Unspecified</option>
+            </select>
+          ) : (
+            <span>{profileData?.gender}</span>
+          )}
+        </div>
+        <div>
+          <label>Organisation: </label>
+          {edit ? (
+            <select
+              name="organisation_id"
+              //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
+              value={editProfileData?.organisation_id ?? ""}
+              onChange={handleChange}
+            >
+              <option value={1}>Microsoft</option>
+              <option value="">None</option>
+            </select>
+          ) : (
+            <span>{profileData?.organisation_name}</span>
+          )}
+        </div>
+        <button type="submit">Submit</button>
+      </form>
       <div>
-        <label>Gender:</label>
         {edit ? (
-          <select
-            name="gender"
-            //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
-            value={editProfileData?.gender}
-            onChange={handleChange}
-          >
-            <option value="M">Male</option>
-            <option value="F">Female</option>
-            <option value="NA">Unspecified</option>
-          </select>
+          <button onClick={() => setEdit(false)}>Cancel</button>
         ) : (
-          <span>{profileData?.gender}</span>
+          <button onClick={() => setEdit(true)}>Edit</button>
         )}
       </div>
-    </form>
+    </>
   );
 };
 

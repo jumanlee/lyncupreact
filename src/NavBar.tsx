@@ -96,14 +96,14 @@ const NavBar: React.FC = () => {
                 <div className="absolute right-0 mt-2 w-36 bg-gray-800 text-gray-200 shadow-md rounded min-w-max overflow-hidden whitespace-nowrap">
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 hover:bg-gray-700"
+                    className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
                     onClick={() => setIsAccountOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/settings"
-                    className="block px-4 py-2 hover:bg-gray-700"
+                    className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
                     onClick={() => setIsAccountOpen(false)}
                   >
                     Settings
@@ -114,7 +114,7 @@ const NavBar: React.FC = () => {
                       logout();
                       setIsAccountOpen(false);
                     }}
-                    className="block w-full text-left px-4 py-2 hover:bg-gray-700"
+                    className="block w-full text-left text-gray-400 px-4 py-2 hover:bg-gray-700"
                   >
                     Logout
                   </button>
