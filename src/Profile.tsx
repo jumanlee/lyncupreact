@@ -28,7 +28,18 @@ const Profile: React.FC = () => {
     null
   );
 
-  const [edit, setEdit] = useState<Boolean>(false);
+  const [edit, setEdit] = useState<boolean>(false);
+
+  //for organisation search input
+  const [searchQuery, setSearchQuery] = useState<string>("");
+  //for showing suggested companies
+  const [suggestions, setSuggestions] = useState<
+    { id: number; name: string }[]
+  >([]);
+  //for dropdown the suggested companies
+  const [showSuggestions, setShowSuggestions] = useState<boolean>(false);
+  //to track clicks outside for closing the orgnaisation search dropdown
+  const inputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     const user_id = localStorage.getItem("user_id");
@@ -45,9 +56,69 @@ const Profile: React.FC = () => {
       });
   }, []);
 
+  //get matching companies as user is typing
+  const handleSearchOrgChange = (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    const query = event.target.value;
+    setSearchQuery(query);
+
+    if (query.length < 2) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    axiosInstance
+      .get(`/updateprofile/searchorg/?q=${query}`)
+      .then((response) => {
+        setSuggestions(response.data);
+        setShowSuggestions(true);
+      })
+      .catch((error) => console.error("search query failed", error));
+  };
+
+  const handleSelectOrg = (org: { id: number; name: string }) => {
+    setEditProfileData((prevEditProfileData) => {
+      if (!prevEditProfileData) {
+        return prevEditProfileData;
+      }
+      return {
+        ...prevEditProfileData,
+        organisation_id: org.id,
+        organisation_name: org.name,
+      };
+    });
+
+    setSearchQuery(org.name);
+    setSuggestions([]); //hide dropdown
+    setShowSuggestions(false);
+  };
+
+  //event listener to control search org clicking outside close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowSuggestions(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+
+    //cleanup
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
+
   //remember change event can be either text area(edit) or input
   const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    event: React.ChangeEvent<
+      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
+    >
   ) => {
     //data structure:
     // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
@@ -186,15 +257,25 @@ const Profile: React.FC = () => {
         <div>
           <label>Organisation: </label>
           {edit ? (
-            <select
-              name="organisation_id"
-              //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
-              value={editProfileData?.organisation_id ?? ""}
-              onChange={handleChange}
-            >
-              <option value={1}>Microsoft</option>
-              <option value="">None</option>
-            </select>
+            <div ref={inputRef}>
+              <input
+                type="text"
+                name="organisation_name"
+                value={searchQuery}
+                onChange={handleSearchOrgChange}
+                placeholder="Search for a company..."
+                onFocus={() => setShowSuggestions(true)}
+              />
+              {showSuggestions && suggestions.length > 0 && (
+                <ul>
+                  {suggestions.map((org) => (
+                    <li key={org.id} onClick={() => handleSelectOrg(org)}>
+                      {org.name}
+                    </li>
+                  ))}
+                </ul>
+              )}
+            </div>
           ) : (
             <span>{profileData?.organisation_name}</span>
           )}
