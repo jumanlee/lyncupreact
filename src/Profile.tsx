@@ -147,7 +147,7 @@ const Profile: React.FC = () => {
         const ageInt = parseInt(value);
         return {
           ...prevEditProfileData,
-          [name]: Number.isNaN(ageInt) ? null : null,
+          [name]: Number.isNaN(ageInt) ? null : ageInt,
         };
       }
       return {
@@ -168,6 +168,7 @@ const Profile: React.FC = () => {
         console.log("updateprofile API success!");
         setProfileData(response.data);
         setEditProfileData(response.data);
+        setEdit(false);
       })
       .catch((error) => {
         console.error("updateprofile API failed", error);
@@ -210,7 +211,7 @@ const Profile: React.FC = () => {
                 name="firstname"
                 value={editProfileData?.firstname ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
               <div className="px-2 py-1 bg-gray-700 rounded">
@@ -230,7 +231,7 @@ const Profile: React.FC = () => {
                 name="lastname"
                 value={editProfileData?.lastname ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
               <div className="px-2 py-1 bg-gray-700 rounded">
@@ -250,7 +251,7 @@ const Profile: React.FC = () => {
                 name="aboutme"
                 value={editProfileData?.aboutme ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
               <div className="px-2 py-1 bg-gray-700 rounded">
@@ -270,7 +271,7 @@ const Profile: React.FC = () => {
                 name="citytown"
                 value={editProfileData?.citytown ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
               <div className="px-2 py-1 bg-gray-700 rounded">
@@ -291,7 +292,7 @@ const Profile: React.FC = () => {
                 name="country"
                 value={editProfileData?.country ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
               <div className="px-2 py-1 bg-gray-700 rounded">
@@ -312,7 +313,7 @@ const Profile: React.FC = () => {
                 name="age"
                 value={editProfileData?.age ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
               <div className="px-2 py-1 bg-gray-700 rounded">
@@ -332,7 +333,7 @@ const Profile: React.FC = () => {
                 //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
                 value={editProfileData?.gender}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               >
                 <option value="M">Male</option>
                 <option value="F">Female</option>
@@ -367,7 +368,7 @@ const Profile: React.FC = () => {
                       <li
                         key={org.id}
                         onClick={() => handleSelectOrg(org)}
-                        className="px-3 py-2 hover:bg-gray-600 cursor-pointer"
+                        className="px-2 py-1 hover:bg-gray-600 cursor-pointer"
                       >
                         {org.name}
                       </li>
