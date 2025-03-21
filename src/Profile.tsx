@@ -175,149 +175,223 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <>
-      <form onSubmit={handleSubmit}>
-        <div>
-          <label>First Name: </label>
+    <div className="container mx-auto px-4 py-8">
+      <div className="max-w-2xl mx-auto bg-gray-800 text-gray-200 p-6 rounded shadow-md">
+        <div className="flex items-center justify-between mb-6">
+          <h2 className="text-2xl text-gray-400 font-semibold">My Profile</h2>
           {edit ? (
-            <input
-              autoComplete="off"
-              type="text"
-              name="firstname"
-              value={editProfileData?.firstname ?? ""}
-              onChange={handleChange}
-            ></input>
-          ) : (
-            <span>{profileData?.firstname}</span>
-          )}
-        </div>
-        <div>
-          <label>Last Name: </label>
-          {edit ? (
-            <input
-              autoComplete="off"
-              type="text"
-              name="lastname"
-              value={editProfileData?.lastname ?? ""}
-              onChange={handleChange}
-            ></input>
-          ) : (
-            <span>{profileData?.lastname}</span>
-          )}
-        </div>
-        <div>
-          <label>About me: </label>
-          {edit ? (
-            <input
-              autoComplete="off"
-              type="text"
-              name="aboutme"
-              value={editProfileData?.aboutme ?? ""}
-              onChange={handleChange}
-            ></input>
-          ) : (
-            <span>{profileData?.aboutme}</span>
-          )}
-        </div>
-        <div>
-          <label>City/Town: </label>
-          {edit ? (
-            <input
-              autoComplete="off"
-              type="text"
-              name="citytown"
-              value={editProfileData?.citytown ?? ""}
-              onChange={handleChange}
-            ></input>
-          ) : (
-            <span>{profileData?.citytown}</span>
-          )}
-        </div>
-
-        <div>
-          <label>Country: </label>
-          {edit ? (
-            <input
-              autoComplete="off"
-              type="text"
-              name="country"
-              value={editProfileData?.country ?? ""}
-              onChange={handleChange}
-            ></input>
-          ) : (
-            <span>{profileData?.country}</span>
-          )}
-        </div>
-
-        <div>
-          <label>Age: </label>
-          {edit ? (
-            <input
-              autoComplete="off"
-              type="text"
-              name="age"
-              value={editProfileData?.age ?? ""}
-              onChange={handleChange}
-            ></input>
-          ) : (
-            <span>{profileData?.age}</span>
-          )}
-        </div>
-
-        <div>
-          <label>Gender: </label>
-          {edit ? (
-            <select
-              name="gender"
-              //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
-              value={editProfileData?.gender}
-              onChange={handleChange}
+            <button
+              onClick={() => setEdit(false)}
+              className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
             >
-              <option value="M">Male</option>
-              <option value="F">Female</option>
-              <option value="NA">Unspecified</option>
-            </select>
+              Cancel
+            </button>
           ) : (
-            <span>{profileData?.gender}</span>
+            <button
+              onClick={() => setEdit(true)}
+              className="bg-[#4b1e1e]  text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+            >
+              Edit
+            </button>
           )}
         </div>
-        <div>
-          <label>Organisation: </label>
-          {edit ? (
-            <div ref={inputRef}>
+
+        <form onSubmit={handleSubmit}>
+          <div className="mb-4">
+            {/* htmlFor is just a way to connect a label to an input */}
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="firstname">
+              First Name:{" "}
+            </label>
+            {edit ? (
               <input
+                id="firstname"
                 autoComplete="off"
                 type="text"
-                name="organisation_name"
-                value={searchQuery}
-                onChange={handleSearchOrgChange}
-                placeholder="Search for a company..."
-                onFocus={() => setShowSuggestions(true)}
-              />
-              {showSuggestions && suggestions.length > 0 && (
-                <ul>
-                  {suggestions.map((org) => (
-                    <li key={org.id} onClick={() => handleSelectOrg(org)}>
-                      {org.name}
-                    </li>
-                  ))}
-                </ul>
-              )}
-            </div>
-          ) : (
-            <span>{profileData?.organisation_name}</span>
-          )}
-        </div>
-        <button type="submit">Submit</button>
-      </form>
-      <div>
-        {edit ? (
-          <button onClick={() => setEdit(false)}>Cancel</button>
-        ) : (
-          <button onClick={() => setEdit(true)}>Edit</button>
-        )}
+                name="firstname"
+                value={editProfileData?.firstname ?? ""}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              ></input>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.firstname ?? ""}
+              </div>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="lastname">
+              Last Name:{" "}
+            </label>
+            {edit ? (
+              <input
+                id="lastname"
+                autoComplete="off"
+                type="text"
+                name="lastname"
+                value={editProfileData?.lastname ?? ""}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              ></input>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.lastname ?? ""}
+              </div>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="aboutme">
+              About me:{" "}
+            </label>
+            {edit ? (
+              <input
+                id="aboutme"
+                autoComplete="off"
+                type="text"
+                name="aboutme"
+                value={editProfileData?.aboutme ?? ""}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              ></input>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.aboutme ?? ""}
+              </div>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="citytown">
+              City/Town:{" "}
+            </label>
+            {edit ? (
+              <input
+                id="citytown"
+                autoComplete="off"
+                type="text"
+                name="citytown"
+                value={editProfileData?.citytown ?? ""}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              ></input>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.citytown ?? ""}
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="country">
+              Country:{" "}
+            </label>
+            {edit ? (
+              <input
+                id="country"
+                autoComplete="off"
+                type="text"
+                name="country"
+                value={editProfileData?.country ?? ""}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              ></input>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.country ?? ""}
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="age">
+              Age:{" "}
+            </label>
+            {edit ? (
+              <input
+                id="age"
+                autoComplete="off"
+                type="text"
+                name="age"
+                value={editProfileData?.age ?? ""}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              ></input>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.age ?? ""}
+              </div>
+            )}
+          </div>
+
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="gender">
+              Gender:{" "}
+            </label>
+            {edit ? (
+              <select
+                id="gender"
+                name="gender"
+                //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
+                value={editProfileData?.gender}
+                onChange={handleChange}
+                className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              >
+                <option value="M">Male</option>
+                <option value="F">Female</option>
+                <option value="NA">Unspecified</option>
+              </select>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.gender ?? ""}
+              </div>
+            )}
+          </div>
+          <div className="mb-4">
+            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="organisation">
+              Organisation:{" "}
+            </label>
+            {edit ? (
+              <div className="relative" ref={inputRef}>
+                <input
+                  id="organisation"
+                  autoComplete="off"
+                  type="text"
+                  name="organisation_name"
+                  value={searchQuery}
+                  onChange={handleSearchOrgChange}
+                  placeholder="Search for a company..."
+                  onFocus={() => setShowSuggestions(true)}
+                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                />
+                {showSuggestions && suggestions.length > 0 && (
+                  <ul className="absolute z-10 bg-gray-700 border border-gray-600 mt-1 w-full rounded shadow-md">
+                    {suggestions.map((org) => (
+                      <li
+                        key={org.id}
+                        onClick={() => handleSelectOrg(org)}
+                        className="px-3 py-2 hover:bg-gray-600 cursor-pointer"
+                      >
+                        {org.name}
+                      </li>
+                    ))}
+                  </ul>
+                )}
+              </div>
+            ) : (
+              <div className="px-2 py-1 bg-gray-700 rounded">
+                {profileData?.organisation_name ?? ""}
+              </div>
+            )}
+          </div>
+          {edit && (
+          <button
+            type="submit"
+            className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+          >
+            Submit
+          </button>)
+}
+        </form>
       </div>
-    </>
+    </div>
   );
 };
 
