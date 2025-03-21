@@ -41,6 +41,11 @@ const Profile: React.FC = () => {
   //to track clicks outside for closing the orgnaisation search dropdown
   const inputRef = useRef<HTMLInputElement>(null);
 
+  //searchTimeout is for tracking typing on org search bar to prevent overwhelming backend as user types. setTimeout is a global built in function. note ReturnType<...> is a built-in typescrpit utility type that extracts the return type from any given function type. Note that setTimeout is a function! typeof means go get the type of this variable or function. This is for if the setTimeout return type ever changes (rarely, but possible in some custom environments).
+  const [searchTimeout, setSearchTimeout] = useState<ReturnType<
+    typeof setTimeout
+  > | null>(null);
+
   useEffect(() => {
     const user_id = localStorage.getItem("user_id");
 
@@ -63,19 +68,29 @@ const Profile: React.FC = () => {
     const query = event.target.value;
     setSearchQuery(query);
 
+    //searchTimeout stores the id of a setTimeout that delays the organisation search API call by a specified time. If the user types again within that time, the timer is cancelled to prevent sending an outdated request
+    if (searchTimeout) {
+      //clearTimeout is a built-in.
+      clearTimeout(searchTimeout);
+    }
+
     if (query.length < 2) {
       setSuggestions([]);
       setShowSuggestions(false);
       return;
     }
 
-    axiosInstance
-      .get(`/updateprofile/searchorg/?q=${query}`)
-      .then((response) => {
-        setSuggestions(response.data);
-        setShowSuggestions(true);
-      })
-      .catch((error) => console.error("search query failed", error));
+    const timeout = setTimeout(() => {
+      axiosInstance
+        .get(`users/searchorg/?q=${query}`)
+        .then((response) => {
+          setSuggestions(response.data);
+          setShowSuggestions(true);
+        })
+        .catch((error) => console.error("search query failed", error));
+    }, 300);
+
+    setSearchTimeout(timeout);
   };
 
   const handleSelectOrg = (org: { id: number; name: string }) => {
@@ -114,11 +129,9 @@ const Profile: React.FC = () => {
     };
   }, []);
 
-  //remember change event can be either text area(edit) or input
+  //To handle field changes, fields that are not search org bar. Remember change event can be either text area(edit) or input
   const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement | HTMLTextAreaElement
-    >
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     //data structure:
     // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
@@ -128,6 +141,14 @@ const Profile: React.FC = () => {
     setEditProfileData((prevEditProfileData) => {
       if (!prevEditProfileData) {
         return prevEditProfileData;
+      }
+
+      if (name === "age") {
+        const ageInt = parseInt(value);
+        return {
+          ...prevEditProfileData,
+          [name]: Number.isNaN(ageInt) ? null : null,
+        };
       }
       return {
         ...prevEditProfileData,
@@ -160,6 +181,7 @@ const Profile: React.FC = () => {
           <label>First Name: </label>
           {edit ? (
             <input
+              autoComplete="off"
               type="text"
               name="firstname"
               value={editProfileData?.firstname ?? ""}
@@ -173,6 +195,7 @@ const Profile: React.FC = () => {
           <label>Last Name: </label>
           {edit ? (
             <input
+              autoComplete="off"
               type="text"
               name="lastname"
               value={editProfileData?.lastname ?? ""}
@@ -186,6 +209,7 @@ const Profile: React.FC = () => {
           <label>About me: </label>
           {edit ? (
             <input
+              autoComplete="off"
               type="text"
               name="aboutme"
               value={editProfileData?.aboutme ?? ""}
@@ -199,6 +223,7 @@ const Profile: React.FC = () => {
           <label>City/Town: </label>
           {edit ? (
             <input
+              autoComplete="off"
               type="text"
               name="citytown"
               value={editProfileData?.citytown ?? ""}
@@ -213,6 +238,7 @@ const Profile: React.FC = () => {
           <label>Country: </label>
           {edit ? (
             <input
+              autoComplete="off"
               type="text"
               name="country"
               value={editProfileData?.country ?? ""}
@@ -227,6 +253,7 @@ const Profile: React.FC = () => {
           <label>Age: </label>
           {edit ? (
             <input
+              autoComplete="off"
               type="text"
               name="age"
               value={editProfileData?.age ?? ""}
@@ -259,6 +286,7 @@ const Profile: React.FC = () => {
           {edit ? (
             <div ref={inputRef}>
               <input
+                autoComplete="off"
                 type="text"
                 name="organisation_name"
                 value={searchQuery}
