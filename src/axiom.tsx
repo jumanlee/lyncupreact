@@ -5,7 +5,7 @@ import axios, {
   AxiosResponse,
 } from "axios";
 
-// this code taken from https://github.com/veryacademy/YT-Django-DRF-Simple-Blog-Series-JWT-Part-3/blob/master/react/blogapi/src/axios.js
+// this code taken from https://github.com/veryacademy/YT-Django-DRF-Simple-Blog-Series-JWT-Part-3/blob/master/react/blogapi/src/axios.js  I have adapted parts of the code.
 
 const baseURL = "http://localhost:8080/api/";
 
@@ -26,16 +26,32 @@ const axiosInstance: AxiosInstance = axios.create({
 axiosInstance.interceptors.request.use(
   //config is an object that contains all the details of the hhtp request before it is sent.
   (config) => {
-    const token = localStorage.getItem("access_token");
-    if (token) {
-      config.headers["Authorization"] = `Bearer ${token}`;
+    //     const token = localStorage.getItem("access_token");
+    //     if (token) {
+    //       config.headers["Authorization"] = `Bearer ${token}`;
+    //     }
+    //check if the request is for refresh
+    if (config.url && config.url.includes("token/refresh/")) {
+      //if so, then we need to remove Authorization header for refresh calls
+      if (config.headers && config.headers["Authorization"]) {
+        delete config.headers["Authorization"];
+      }
+    } else {
+      const token = localStorage.getItem("access_token");
+      if (token) {
+        config.headers["Authorization"] = `Bearer ${token}`;
+      }
     }
     return config;
   },
-  (error) => Promise.reject(error)
+
+  (error) => {
+    console.error(error);
+    Promise.reject(error);
+  }
 );
 
-//Handle Token Expiry and Refresh Automatically, Handle Network or CORS Errors, Retry the Original Request, Centralized Error Handling
+//This is for when we get a response. Handle Token Expiry and Refresh Automatically, Handle Network or CORS Errors, Retry the Original Request, Centralized Error Handling
 axiosInstance.interceptors.response.use(
   (response: AxiosResponse) => response,
   async function (error: AxiosError): Promise<any> {
@@ -55,6 +71,9 @@ axiosInstance.interceptors.response.use(
       error.response.status === 401 &&
       originalRequest.url === baseURL + "token/refresh/"
     ) {
+      console.error(
+        "error reponse status 401 and originalRequest.url === baseURL + token/refresh/"
+      );
       window.location.href = "/";
       return Promise.reject(error);
     }
@@ -72,7 +91,9 @@ axiosInstance.interceptors.response.use(
       //On the other hand refresh_token is never sent in the header and is not used to authenticate requests, it is only meant to be sent manually in the body of a POST request to /api/token/refresh/ in order to obtain a new access token. Because of that, the frontend is responsible for managing its storage, checking its expiry if needed, and calling the refresh endpoint.
 
       if (refreshToken) {
+        console.log(refreshToken);
         const tokenPartsArray = refreshToken.split(".");
+        console.log(tokenPartsArray);
         if (tokenPartsArray.length != 3) {
           console.error("invalid refresh token format");
           window.location.href = "/";
@@ -104,22 +125,40 @@ axiosInstance.interceptors.response.use(
               refresh: refreshToken,
             });
 
-            if (response.data) {
-              localStorage.setItem("access_token", response.data.access);
-              localStorage.setItem("refresh_token", response.data.refresh);
+            //we need to do this because when the access token is sent and it's expired, we send the refresh token to get the access token, but what is then returned by the backend contains only a new access token, without a refresh token. So if we do localStorage.setItem("refresh_token", response.data.refresh); this would store a null value! This caused major problems and the error was tricky to find.
+            const newAccess = response.data.access;
+            const newRefresh = response.data.refresh;
 
+            if (newAccess) {
+              localStorage.setItem("access_token", newAccess);
               axiosInstance.defaults.headers[
                 "Authorization"
-              ] = `Bearer ${response.data.access}`;
-              if (!originalRequest.headers) {
-                originalRequest.headers = {};
-              }
-              originalRequest.headers[
-                "Authorization"
-              ] = `Bearer ${response.data.access}`;
-
-              return axiosInstance(originalRequest);
+              ] = `Bearer ${newAccess}`;
+              originalRequest.headers = originalRequest.headers || {};
+              originalRequest.headers["Authorization"] = `Bearer ${newAccess}`;
             }
+
+            if (newRefresh) {
+              localStorage.setItem("refresh_token", newRefresh);
+            }
+
+            //as explaned above, this must be replaced by the above due to response.data.refresh being null when a new access token is returned, leaving it here for reference.
+            // if (response.data) {
+            //   localStorage.setItem("access_token", response.data.access);
+            //   localStorage.setItem("refresh_token", response.data.refresh);
+
+            //   axiosInstance.defaults.headers[
+            //     "Authorization"
+            //   ] = `Bearer ${response.data.access}`;
+            //   if (!originalRequest.headers) {
+            //     originalRequest.headers = {};
+            //   }
+            //   originalRequest.headers[
+            //     "Authorization"
+            //   ] = `Bearer ${response.data.access}`;
+
+            //this resends the failed original API request
+            return axiosInstance(originalRequest);
           } catch (error) {
             console.error(error);
             window.location.href = "/";
@@ -133,46 +172,6 @@ axiosInstance.interceptors.response.use(
         console.log("refresh token not available.");
         window.location.href = "/";
       }
-
-      //     if (refreshToken) {
-      //         const tokenParts = JSON.parse(atob(refreshToken.split('.')[1]));
-
-      //         // exp date in token is expressed in seconds, while now() returns milliseconds:
-      //         const now = Math.ceil(Date.now() / 1000);
-
-      //         if (tokenParts.exp > now) {
-      //             try {
-      //                 const response = await axiosInstance.post('/token/refresh/', {
-      //                     refresh: refreshToken,
-      //                 });
-
-      //                 if (response.data) {
-      //                     localStorage.setItem('access_token', response.data.access);
-      //                     localStorage.setItem('refresh_token', response.data.refresh);
-
-      //                     axiosInstance.defaults.headers['Authorization'] = `Bearer ${response.data.access}`;
-
-      //                     //initialise headers if it doesn't exist
-      //                     if (!originalRequest.headers) {
-      //                         originalRequest.headers = {}; //initialise headers if it doesn't exist
-      //                     }
-      //                     originalRequest.headers['Authorization'] = `Bearer ${response.data.access}`;
-
-      //                     return axiosInstance(originalRequest);
-      //                 }
-      //             } catch (err) {
-      //                 console.log(err);
-      //                 window.location.href = '/';
-      //                 return Promise.reject(err);
-      //             }
-      //         } else {
-      //             console.log('Refresh token is expired', tokenParts.exp, now);
-      //             window.location.href = '/';
-      //         }
-      //     } else {
-      //         console.log('Refresh token not available.');
-      //         window.location.href = '/';
-      //     }
     }
 
     // specific error handling done elsewhere

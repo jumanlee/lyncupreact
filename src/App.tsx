@@ -1,6 +1,4 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-// import logo from './logo.svg';
-// import './App.css';
 import AuthForm from "./Auth";
 import ChatRoom from "./ChatRoom";
 import Queue from "./Queue";
@@ -9,9 +7,9 @@ import Navbar from "./NavBar";
 import Profile from "./Profile";
 import axiosInstance from "./axiom";
 
-//Note: all pages are formatted with Prettier extension
+//Note: all code is formatted with Prettier extension
 
-//because we need the child components need access to authenticated state for navgation, iot's better to use useContext!
+//because we need the child components need access to authenticated state for navgation, it's better to use useContext!
 
 //first define the context value type, the type of he value being passed/accessed via context
 interface AuthContextType {
@@ -48,7 +46,6 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
     }
 
     //this section is for checking if the token actually is still valid by calling some api, if not then isAuthenticated is set to false
-
     axiosInstance
       .get("/users/testapi/")
       .then(() => {
@@ -58,11 +55,11 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       .catch(() => {
         console.log("validateToken() failed");
 
-        //removeItem here is important! without it, this gave me problems when the token is already expired, as we initialise  const [isAuthenticated, setIsAuthenticated] = useState<boolean>( Boolean(localStorage.getItem("access_token")). 
-        // Then, when validateToken function runs, it fails the API check and sets isAuthenticated to false: But then because we have an expired token, there is a token in storage, so we keep executing validateToken, which causes repeated execution of validateToken!: 
+        //removeItem here is important! without it, this gave me problems when the token is already expired, as we initialise  const [isAuthenticated, setIsAuthenticated] = useState<boolean>( Boolean(localStorage.getItem("access_token")).
+        // Then, when validateToken function runs (now commented out, but previously was in use!), it fails the API check and sets isAuthenticated to false: But then because we have an expired token, there is a token in storage, so we keep executing validateToken, which causes repeated execution of validateToken!:
         // const validateToken = async () => {
         //     const token = localStorage.getItem("access_token");
-        //     if (!token) { 
+        //     if (!token) {
         //Therefore it's important we must remove the expired tokens!
         localStorage.removeItem("access_token");
         localStorage.removeItem("refresh_token");
@@ -70,6 +67,7 @@ const AuthProvider: React.FC<{ children: React.ReactNode }> = ({
       });
   };
 
+  //when we refresh a page from the browser, the whole reactapp gets loaded again, therefore in this case useEffect does get executed again. This is different from just navigating from page to page, which doesn't trigger this useEffect again!
   useEffect(() => {
     validateToken();
 
