@@ -91,9 +91,8 @@ axiosInstance.interceptors.response.use(
       //On the other hand refresh_token is never sent in the header and is not used to authenticate requests, it is only meant to be sent manually in the body of a POST request to /api/token/refresh/ in order to obtain a new access token. Because of that, the frontend is responsible for managing its storage, checking its expiry if needed, and calling the refresh endpoint.
 
       if (refreshToken) {
-        console.log(refreshToken);
         const tokenPartsArray = refreshToken.split(".");
-        console.log(tokenPartsArray);
+        
         if (tokenPartsArray.length != 3) {
           console.error("invalid refresh token format");
           window.location.href = "/";

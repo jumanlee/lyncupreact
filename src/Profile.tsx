@@ -55,6 +55,8 @@ const Profile: React.FC = () => {
         console.log("showprofile API success!");
         setProfileData(response.data);
         setEditProfileData(response.data);
+        //to protect against sending null organisation when the user doesn't intend it.
+        setSearchQuery(response.data.organisation_name || "");
       })
       .catch((error) => {
         console.error("showprofile API failed", error);
@@ -105,7 +107,7 @@ const Profile: React.FC = () => {
       };
     });
 
-    setSearchQuery(org.name);
+    setSearchQuery("");
     setSuggestions([]); //hide dropdown
     setShowSuggestions(false);
   };
@@ -351,6 +353,9 @@ const Profile: React.FC = () => {
             </label>
             {edit ? (
               <div className="relative" ref={inputRef}>
+              <div className="px-2 py-1 mb-2 bg-gray-700 rounded">
+                {editProfileData?.organisation_name ?? ""}
+              </div>
                 <input
                   id="organisation"
                   autoComplete="off"
@@ -360,7 +365,7 @@ const Profile: React.FC = () => {
                   onChange={handleSearchOrgChange}
                   placeholder="Search for a company..."
                   onFocus={() => setShowSuggestions(true)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
                 />
                 {showSuggestions && suggestions.length > 0 && (
                   <ul className="absolute z-10 bg-gray-700 border border-gray-600 mt-1 w-full rounded shadow-md">
