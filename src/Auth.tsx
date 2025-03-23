@@ -97,7 +97,7 @@ const AuthForm: React.FC = () => {
             <input
               id="email"
               type="email"
-              name="user_email" //deliberately misname to discourage autofill
+              name="email" 
               autoComplete="off"
               value={loginData.email}
               onChange={handleLoginChange}
@@ -114,7 +114,7 @@ const AuthForm: React.FC = () => {
             <input
               id="password"
               type="password"
-              name="user_pass" //deliberately misname to discourage autofill
+              name="password"
               autoComplete="new-password"
               value={loginData.password}
               onChange={handleLoginChange}
