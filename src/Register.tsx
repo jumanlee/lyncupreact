@@ -11,7 +11,7 @@ interface LoginData {
   password: string;
 }
 
-const AuthForm: React.FC = () => {
+const Register: React.FC = () => {
   const [loginData, setLoginData] = useState<LoginData>({
     email: "",
     password: "",
@@ -84,7 +84,7 @@ const AuthForm: React.FC = () => {
     <div className="min-h-screen flex items-center justify-center px-4">
       <div className="w-full max-w-lg mx-auto bg-gray-800 text-gray-200 p-6 rounded shadow-md">
         <h2 className="text-2xl text-gray-400 font-semibold mb-6 text-center">
-          Welcome to LyncUp!
+          Register a LyncUp account
         </h2>
         <form onSubmit={handleLoginSubmit}>
           <div className="mb-4">
@@ -97,11 +97,11 @@ const AuthForm: React.FC = () => {
             <input
               id="email"
               type="email"
-              name="user_email" //deliberately misname to discourage autofill
-              autoComplete="off"
+              name="email"
               value={loginData.email}
               onChange={handleLoginChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 
+                           focus:outline-none focus:ring-1 focus:ring-gray-500"
             />
           </div>
           <div className="mb-4">
@@ -114,8 +114,7 @@ const AuthForm: React.FC = () => {
             <input
               id="password"
               type="password"
-              name="user_pass" //deliberately misname to discourage autofill
-              autoComplete="new-password"
+              name="password"
               value={loginData.password}
               onChange={handleLoginChange}
               className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
@@ -131,18 +130,16 @@ const AuthForm: React.FC = () => {
           </div>
         </form>
         <div className="mt-5 flex items-center justify-center">
-          <button onClick={() => navigate("/register")}>
+          <Link to="/">
             <span className="text-gray-400 text-sm font-semibold">
               Don't have an account?
             </span>{" "}
-            <span className="text-gray-200 text-sm font-bold">
-              Register now!
-            </span>
-          </button>
+            <span className="text-gray-200 text-sm font-bold">Register now!</span>
+          </Link>
         </div>
       </div>
     </div>
   );
 };
 
-export default AuthForm;
+export default Register;

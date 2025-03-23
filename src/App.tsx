@@ -5,6 +5,7 @@ import Queue from "./Queue";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./NavBar";
 import Profile from "./Profile";
+import Register from "./Register";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension
@@ -113,8 +114,9 @@ const App: React.FC = () => {
         <Routes>
           {/* If unauthenticated, show the login page, or if authenticated e.g. there's a token, then just navigate to the queue page */}
           <Route path="/" element={<PublicRoute />} />
+          <Route path="/register" element={<Register />} />
 
-          {/* For authenticated users */}
+          {/* For authenticated users. This set is only reached if the route path matches /chat, /queue etc, as defined below, which the PublicRoute component only redirects when authenticated. */}
           <Route path="/" element={<Navbar />}>
             <Route
               path="/chat"
