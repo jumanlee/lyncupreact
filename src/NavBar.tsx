@@ -69,7 +69,7 @@ const NavBar: React.FC = () => {
             >
               Chat
             </Link>
-            <Link
+            {/* <Link
               to="/"
               className="hover:opacity-80 text-gray-400 font-semibold "
             >
@@ -80,7 +80,7 @@ const NavBar: React.FC = () => {
               className="hover:opacity-80 text-gray-400 font-semibold "
             >
               Messages
-            </Link>
+            </Link> */}
 
             {/* Account has dropdown accordion  */}
             <div className="relative" ref={dropdownRef}>

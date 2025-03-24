@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "./axiom";
 import { useLocation } from "react-router-dom";
-import { useNavigate } from 'react-router-dom';
+import { useNavigate } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
 const ChatRoom: React.FC = () => {
@@ -50,7 +50,6 @@ const ChatRoom: React.FC = () => {
         }
       } catch (error) {
         console.error("Failed to refresh token:", error);
-        // window.location.href = "/login/";
         navigate("/");
         return null;
       }
@@ -60,89 +59,100 @@ const ChatRoom: React.FC = () => {
     return accessToken;
   };
 
+  //Promise<void> expected to call resolve() with no value
+  const fetchTokenAndConnectWebSocket = async (): Promise<void> => {
+    //this conditional checking is necessary because React's Strict Mode causes useEffect to run twice in development, leading to multiple WebSocket connections and duplicated message event listeners. Note that if I refresh the web page, the isWebSocketInitialised.current becomes false.
+    if (isWebSocketInitialised.current) return;
+    isWebSocketInitialised.current = true;
+
+    const token = await getValidAccessToken();
+    const { room_id } = location.state || {};
+    // const groupname = "hello_world";
+
+    if (!token) {
+      console.error("Token not found in localStorage!");
+      return;
+    }
+
+    if (!room_id) {
+      console.error("no room_id received!");
+      return;
+    }
+
+    //open Websocket connection
+    const url = `ws://localhost:8080/ws/chat/${room_id}/?token=${token}`;
+
+    //return a promise to see whether websocket connections are properly establsihed
+    return new Promise((resolve, reject) => {
+      websocketRef.current = new WebSocket(url);
+      // websocketRef.current = websocket;
+
+      websocketRef.current.addEventListener("open", () => {
+        console.log("WebSocket connection established");
+        resolve();
+      });
+
+      websocketRef.current.addEventListener("error", (error) => {
+        console.error("Websocket error:", error);
+        reject(error);
+      });
+
+      websocketRef.current.addEventListener("close", () => {
+        console.log("WebSocket connection closed");
+      });
+
+      //websocket that listens to incoming info (including chat messages and members joined) from server. The chat messages include names of senders too, to be displayed.
+      websocketRef.current.addEventListener("message", (event) => {
+        console.log("Message from server:", event.data);
+        const data = JSON.parse(event.data);
+
+        //the double rendering in the console is caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
+        if (data.hasOwnProperty("text") && data["text"]) {
+          setMessages((prevMessages) => {
+            console.log("Previous messages state:", prevMessages);
+            console.log("New message being added:", data["text"]);
+            return [...prevMessages, data["text"]];
+          });
+        }
+
+        if ("members" in data && data["members"]) {
+          // data["members"] format is: {"members": [[1, "Youknow", "Who"]]}
+          setMembers(
+            data["members"].map(
+              ([user_id, firstname, lastname]: [number, string, string]) =>
+                //convert the array to an object with keys user_id, firstname, lastname for easier management
+                ({ user_id, firstname, lastname })
+            )
+          );
+        }
+        //The below is to close the websocket paranthesis, remember this bit is all part of one websocket ref
+      });
+    });
+  };
+
+  //store self user id in hook
+  const getUserOwnId = () => {
+    const self_user_id = localStorage.getItem("user_id");
+    if (self_user_id) {
+      setSelfUserId(self_user_id);
+    } else {
+      console.log(
+        "Failed to store self user id in hook as self_user_id is null"
+      );
+    }
+  };
+
   useEffect(() => {
-    const fetchTokenAndConnectWebSocket = async () => {
-      //this conditional checking is necessary because React's Strict Mode causes useEffect to run twice in development, leading to multiple WebSocket connections and duplicated message event listeners. Note that if I refresh the web page, the isWebSocketInitialised.current becomes false.
-      if (isWebSocketInitialised.current) return;
-      isWebSocketInitialised.current = true;
-
+    const setupConnectionAndFetchInitialData = async () => {
       try {
-        const token = await getValidAccessToken();
-        const { room_id } = location.state || {};
-        // const groupname = "hello_world";
-
-        if (!token) {
-          console.error("Token not found in localStorage!");
-          return;
-        }
-
-        if (!room_id) {
-          console.error("no room_id received!");
-          return;
-        }
-
-        //open Websocket connection
-        const url = `ws://localhost:8080/ws/chat/${room_id}/?token=${token}`;
-        console.log(url);
-        websocketRef.current = new WebSocket(url);
-        // websocketRef.current = websocket;
-
-        websocketRef.current.addEventListener("open", () => {
-          console.log("WebSocket connection established");
-        });
-
-        websocketRef.current.addEventListener("message", (event) => {
-          console.log("Message from server:", event.data);
-          const data = JSON.parse(event.data);
-
-          //the double rendering in the console is  caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
-          if (data.hasOwnProperty("text") && data["text"]) {
-            setMessages((prevMessages) => {
-              console.log("Previous messages state:", prevMessages);
-              console.log("New message being added:", data["text"]);
-              return [...prevMessages, data["text"]];
-            });
-          }
-
-          if ("members" in data && data["members"]) {
-            // data["members"] format is: {"members": [[1, "Youknow", "Who"]]}
-            setMembers(
-              data["members"].map(
-                ([user_id, firstname, lastname]: [number, string, string]) =>
-                  //convert the array to an object with keys user_id, firstname, lastname for easier management
-                  ({ user_id, firstname, lastname })
-              )
-            );
-          }
-          //The below is to close the websocket paranthesis, remember this bit is all part of one websocket ref
-        });
-
-        websocketRef.current.addEventListener("error", (error) => {
-          console.error("WebSocket error:", error);
-        });
-
-        websocketRef.current.addEventListener("close", () => {
-          console.log("WebSocket connection closed");
-        });
+        await fetchTokenAndConnectWebSocket();
+        getUserOwnId();
       } catch (error) {
-        console.error("Failed to validate token or connect WebSocket:", error);
+        console.error("Websocket connection failed", error);
       }
     };
 
-    //store self user id in hook
-    const getUserId = () => {
-      const self_user_id = localStorage.getItem("user_id");
-      if (self_user_id) {
-        setSelfUserId(self_user_id);
-      } else {
-        console.log(
-          "Failed to store self user id in hook as self_user_id is null"
-        );
-      }
-    };
-
-    fetchTokenAndConnectWebSocket();
-    getUserId();
+    setupConnectionAndFetchInitialData();
 
     return () => {
       // websocket.close();
@@ -157,12 +167,17 @@ const ChatRoom: React.FC = () => {
   }, []);
 
   const sendMessage = () => {
-    if (websocketRef.current && inputMessage.trim() !== "") {
+    if (
+      websocketRef.current?.readyState === WebSocket.OPEN &&
+      inputMessage.trim() !== ""
+    ) {
       const messageData = {
         text: inputMessage,
       };
       websocketRef.current.send(JSON.stringify(messageData));
       setInputMessage("");
+    } else {
+      console.warn("Websocket not open or message is empty. Message not sent.");
     }
   };
 
@@ -175,12 +190,11 @@ const ChatRoom: React.FC = () => {
 
   //event to handle likes
   const toggleLike = (user_id: number) => {
-
     //set post request string to be passed into .post
     //if the user_to has previously been liked, we need to unlike
     //otherwise, if not previously liked, it means user_from wants to like
     const postString = likes[user_id] ? "/users/unlike/" : "/users/like/";
-    
+
     //update like state in database with API
 
     axiosInstance

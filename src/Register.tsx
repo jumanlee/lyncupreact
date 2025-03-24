@@ -1,10 +1,7 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, ChangeEvent } from "react";
 import axiosInstance from "./axiom";
-import { useNavigate, Link } from "react-router-dom";
-import { jwtDecode, JwtPayload } from "jwt-decode";
-import { useAuth } from "./App";
+import { useNavigate } from "react-router-dom";
 
-//css library component from https://tailwindui.com/components/application-ui/forms/sign-in-forms
 
 interface RegisterData {
   email: string;
