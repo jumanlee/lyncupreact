@@ -4,6 +4,8 @@ import { useLocation } from "react-router-dom";
 import { useNavigate } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
+import ProfileModal, { ProfileData } from "./ProfileModal";
+
 const ChatRoom: React.FC = () => {
   const [messages, setMessages] = useState<string[]>([]);
   const [inputMessage, setInputMessage] = useState<string>("");
@@ -14,20 +16,26 @@ const ChatRoom: React.FC = () => {
   const isWebSocketInitialised = useRef<boolean>(false);
   const [likes, setLikes] = useState<Record<number, boolean>>({});
   const [selfUserId, setSelfUserId] = useState<string | null>("");
+
+  //for displaying selected profile
+  const [selectedProfile, setSelectedProfile] = useState<ProfileData | null>(
+    null
+  );
+
   const location = useLocation();
   const navigate = useNavigate();
 
-  interface ProfileData {
-    firstname: string | null;
-    lastname: string | null;
-    aboutme: string | null;
-    citytown: string | null;
-    country: string | null;
-    age: number | null;
-    gender: "M" | "F" | "NA";
-    organisation_id: number | null;
-    organisation_name: string | null;
-  }
+  // interface ProfileData {
+  //   firstname: string | null;
+  //   lastname: string | null;
+  //   aboutme: string | null;
+  //   citytown: string | null;
+  //   country: string | null;
+  //   age: number | null;
+  //   gender: "M" | "F" | "NA";
+  //   organisation_id: number | null;
+  //   organisation_name: string | null;
+  // }
 
   const [otherUsersData, setOtherUsersData] = useState<ProfileData[]>([]);
 
@@ -190,6 +198,7 @@ const ChatRoom: React.FC = () => {
       });
   };
 
+  //useffect to connect to websocket and get initial data
   useEffect(() => {
     const setupConnectionAndFetchInitialData = async () => {
       try {
@@ -252,7 +261,6 @@ const ChatRoom: React.FC = () => {
     const postString = likes[user_id] ? "/users/unlike/" : "/users/like/";
 
     //update like state in database with API
-
     axiosInstance
       .post(postString, { user_to: user_id })
       .then((response) => {
@@ -316,13 +324,37 @@ const ChatRoom: React.FC = () => {
             <div
               key={member.user_id}
               className="flex justify-between p-2 bg-white border border-gray-300 rounded-lg text-gray-800"
+              onClick={() => {
+                console.log("otherUsersData");
+                console.log(otherUsersData);
+                if (Number(selfUserId) !== Number(member.user_id)) {
+                  const profile = otherUsersData.find(
+                    //don't need to first check if item has user_id in JS as it won't throw an error like in Python, it would just be undefined
+                    (item) => Number(item.user_id) === Number(member.user_id)
+                  );
+                  if (profile) {
+                    setSelectedProfile(profile);
+                  } else {
+                    console.warn(
+                      "profile data not found for user",
+                      member.user_id
+                    );
+                  }
+                }
+              }}
             >
               <span>
                 {member.firstname} {member.lastname}
               </span>
 
-              {String(selfUserId) != String(member.user_id) ? (
-                <button onClick={() => toggleLike(member.user_id)}>
+              {Number(selfUserId) != Number(member.user_id) ? (
+                <button
+                  onClick={(event) => {
+                    //we need event as we need stopPropogation to prevent the event from bubbling up and affecting the parent's oncClick!
+                    event.stopPropagation();
+                    toggleLike(member.user_id);
+                  }}
+                >
                   <img
                     width="20"
                     height="20"
@@ -339,6 +371,13 @@ const ChatRoom: React.FC = () => {
           ))}
         </div>
       </div>
+      {/* Profile modal */}
+      {selectedProfile && (
+        <ProfileModal
+          profile={selectedProfile}
+          onClose={() => setSelectedProfile(null)}
+        />
+      )}
     </div>
   );
 };

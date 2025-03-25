@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "./axiom";
-import { useLocation } from "react-router-dom";
+
 
 const Profile: React.FC = () => {
   // interface OrganisationDetails {
@@ -9,6 +9,7 @@ const Profile: React.FC = () => {
   // }
 
   interface ProfileData {
+    user_id: number;
     firstname: string | null;
     lastname: string | null;
     aboutme: string | null;
