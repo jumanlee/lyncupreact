@@ -74,7 +74,7 @@ axiosInstance.interceptors.response.use(
       console.error(
         "error reponse status 401 and originalRequest.url === baseURL + token/refresh/"
       );
-    //   window.location.href = "/";
+      window.location.href = "/";
       return Promise.reject(error);
     }
 
@@ -95,7 +95,7 @@ axiosInstance.interceptors.response.use(
 
         if (tokenPartsArray.length != 3) {
           console.error("invalid refresh token format");
-        //   window.location.href = "/";
+          window.location.href = "/";
           return Promise.reject(error);
         }
 
@@ -112,7 +112,7 @@ axiosInstance.interceptors.response.use(
           tokenPayload = JSON.parse(atob(base64));
         } catch (error) {
           console.error("error decoding refresh token", error);
-        //   window.location.href = "/";
+          window.location.href = "/";
           return Promise.reject(error);
         }
 
@@ -160,7 +160,7 @@ axiosInstance.interceptors.response.use(
             return axiosInstance(originalRequest);
           } catch (error) {
             console.error(error);
-            // window.location.href = "/";
+            window.location.href = "/";
             return Promise.reject(error);
           }
         } else {
@@ -170,7 +170,7 @@ axiosInstance.interceptors.response.use(
         }
       } else {
         console.log("refresh token not available.");
-        // window.location.href = "/";
+        window.location.href = "/";
       }
     }
 

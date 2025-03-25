@@ -14,14 +14,28 @@ const ChatRoom: React.FC = () => {
   const isWebSocketInitialised = useRef<boolean>(false);
   const [likes, setLikes] = useState<Record<number, boolean>>({});
   const [selfUserId, setSelfUserId] = useState<string | null>("");
-
   const location = useLocation();
   const navigate = useNavigate();
+
+  interface ProfileData {
+    firstname: string | null;
+    lastname: string | null;
+    aboutme: string | null;
+    citytown: string | null;
+    country: string | null;
+    age: number | null;
+    gender: "M" | "F" | "NA";
+    organisation_id: number | null;
+    organisation_name: string | null;
+  }
+
+  const [otherUsersData, setOtherUsersData] = useState<ProfileData[]>([]);
 
   //adapted code from https://medium.com/@velja/token-refresh-with-axios-interceptors-for-a-seamless-authentication-experience-854b06064bde
   //note: when a function is declared as async, it automatically returns a Promise, even if there’s no new Promise() inside
   //returning a Promise means that a function does not return a value immediately, but instead returns a Promise object that will resolve (success) or reject (failure) in the future.
   const getValidAccessToken = async (): Promise<string | null> => {
+    //this bit of checks here are necessary for websockets connections and are not handled by axiom!
     let accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
 
@@ -142,6 +156,40 @@ const ChatRoom: React.FC = () => {
     }
   };
 
+  const getOtherUsersData = () => {
+    //data structure:
+    // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
+    //path e.g.: /api/users/showmultiprofiles/?user_ids=1,2
+    console.log("members");
+    console.log(members);
+    //retrieve all other users' ids. Important to use set as there could be a chance of duplication, so must prevent it.
+    let otherUsersIdsSet = new Set();
+    for (let i = 0; i < members.length; i++) {
+      if (Number(members[i].user_id) !== Number(selfUserId))
+        otherUsersIdsSet.add(members[i].user_id);
+    }
+
+    if (otherUsersIdsSet.size === 0) return;
+
+    //convert to array
+    let otherUsersIdsArray = [...otherUsersIdsSet];
+    console.log(otherUsersIdsArray);
+
+    axiosInstance
+      .get("users/showmultiprofiles/", {
+        params: {
+          user_ids: otherUsersIdsArray.join(","), //turns [2,4,8] into "2,4,8"
+        },
+      })
+      .then((response) => {
+        console.log("multiprofiles API success!");
+        setOtherUsersData(response.data);
+      })
+      .catch((error) => {
+        console.error("multiprofiles API failed", error);
+      });
+  };
+
   useEffect(() => {
     const setupConnectionAndFetchInitialData = async () => {
       try {
@@ -165,6 +213,14 @@ const ChatRoom: React.FC = () => {
       }
     };
   }, []);
+
+  //useEffect to detect member whenever they join. Use this to collect other users' profile data
+  useEffect(() => {
+    if (selfUserId && members.length > 0) {
+      getOtherUsersData();
+    }
+    console.log(otherUsersData);
+  }, [members, selfUserId]);
 
   const sendMessage = () => {
     if (
