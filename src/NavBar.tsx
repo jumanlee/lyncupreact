@@ -127,7 +127,8 @@ const NavBar: React.FC = () => {
 
       {/* The main app */}
       {/* outlet is a placeholder for where the nested child routes is rendered */}
-      <main className="flex-grow">
+      {/* flex-min-0 means I want you to grow and take up leftover space (flex-grow), but allow shrinking if needed (min-h-0) */}
+      <main className="flex-grow flex flex-col min-h-0">
         {/* the child routes render here */}
         <Outlet />
       </main>

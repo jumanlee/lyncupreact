@@ -146,7 +146,7 @@ const Queue: React.FC = () => {
   }, [triggeredEventListener]);
 
   return (
-    <div className="flex justify-center items-center h-screen">
+    <div className="flex flex-col items-center justify-center flex-grow w-full h-full">
       {!triggeredEventListener ? (
         <div>
           <button

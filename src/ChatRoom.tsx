@@ -1,7 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "./axiom";
-import { useLocation } from "react-router-dom";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 
 import ProfileModal, { ProfileData } from "./ProfileModal";
@@ -285,12 +284,12 @@ const ChatRoom: React.FC = () => {
   };
 
   return (
-    <div className="flex h-screen bg-gray-100 text-gray-800">
+    <div className="flex flex-grow bg-gray-500 text-gray-800">
       {/* Chat Section */}
       <div className="flex flex-col flex-grow p-4">
-        <h1 className="text-2xl font-bold text-purple-700 mb-4">
+        {/* <h1 className="text-2xl font-bold text-purple-700 mb-4">
           Chat Room ID: 12257
-        </h1>
+        </h1> */}
         <div className="flex-grow overflow-y-auto bg-white border border-gray-300 rounded-lg p-4 mb-4">
           {messages.map((message, index) => (
             <div key={index} className="mb-2 text-gray-800">
@@ -303,13 +302,13 @@ const ChatRoom: React.FC = () => {
             type="text"
             value={inputMessage}
             onChange={(e) => setInputMessage(e.target.value)}
-            placeholder="Type a message..."
+            placeholder="Send a message..."
             onKeyDown={handleKeyPress}
-            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700"
           />
           <button
             onClick={sendMessage}
-            className="px-4 py-2 bg-purple-700 text-white rounded-lg hover:bg-purple-600 focus:outline-none focus:ring-2 focus:ring-purple-500"
+            className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
           >
             Send
           </button>
@@ -317,13 +316,13 @@ const ChatRoom: React.FC = () => {
       </div>
 
       {/* members section */}
-      <div className="w-1/4 bg-gray-200 border-l border-gray-300 p-4">
-        <h2 className="text-xl font-bold text-purple-700 mb-4">Members</h2>
+      <div className="w-1/4 bg-gray-300 border-l border-gray-300 p-4 relative flex flex-col">
+        <h2 className="text-xl text-gray-800 font-semibold mb-4">Members</h2>
         <div className="space-y-2">
           {members.map((member, index) => (
             <div
               key={member.user_id}
-              className="flex justify-between p-2 bg-white border border-gray-300 rounded-lg text-gray-800"
+              className="flex justify-between p-2 bg-white border border-gray-300  rounded-lg text-base text-gray-600"
               onClick={() => {
                 console.log("otherUsersData");
                 console.log(otherUsersData);
@@ -343,11 +342,17 @@ const ChatRoom: React.FC = () => {
                 }
               }}
             >
-              <span>
+              <span
+                className={
+                  Number(selfUserId) !== Number(member.user_id)
+                    ? "cursor-pointer"
+                    : ""
+                }
+              >
                 {member.firstname} {member.lastname}
               </span>
 
-              {Number(selfUserId) != Number(member.user_id) ? (
+              {Number(selfUserId) != Number(member.user_id) && (
                 <button
                   onClick={(event) => {
                     //we need event as we need stopPropogation to prevent the event from bubbling up and affecting the parent's oncClick!
@@ -366,9 +371,18 @@ const ChatRoom: React.FC = () => {
                     alt="thumb-up"
                   />
                 </button>
-              ) : null}
+              )}
             </div>
           ))}
+        </div>
+        {/* quit button aligned bottom-right */}
+        <div className="mt-4 self-end">
+          <button
+            onClick={() => navigate("/")}
+            className="absolute bottom-4 right-4 bg-gray-600 text-gray-200 font-semibold py-2 px-5 rounded focus:outline-none"
+          >
+            Quit
+          </button>
         </div>
       </div>
       {/* Profile modal */}
