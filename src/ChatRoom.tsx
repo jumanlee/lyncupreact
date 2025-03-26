@@ -21,20 +21,13 @@ const ChatRoom: React.FC = () => {
     null
   );
 
+  //for tracking message bottom position so that user always sees the latest messaage.
+  //this gives direct access to the DOM node of the scrollable div that contains all the chat messages
+  //this is then attached to the message container
+  const messagesEndRef = useRef<HTMLDivElement | null>(null);
+
   const location = useLocation();
   const navigate = useNavigate();
-
-  // interface ProfileData {
-  //   firstname: string | null;
-  //   lastname: string | null;
-  //   aboutme: string | null;
-  //   citytown: string | null;
-  //   country: string | null;
-  //   age: number | null;
-  //   gender: "M" | "F" | "NA";
-  //   organisation_id: number | null;
-  //   organisation_name: string | null;
-  // }
 
   const [otherUsersData, setOtherUsersData] = useState<ProfileData[]>([]);
 
@@ -283,16 +276,28 @@ const ChatRoom: React.FC = () => {
       });
   };
 
+  //for message bottom position so that user always sees the latest messaage.
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      //scrollTop set to scrollHeight, it then jumps to the very bottom of the messages container.
+      //scrollTop is a built-in javascript property on HTML elements, it tells how far the element has been scrolled vertically from the top
+      messagesEndRef.current.scrollTop = messagesEndRef.current.scrollHeight;
+    }
+  }, [messages]);
+
   return (
-    <div className="h-[83vh] flex gap-4 p-4 bg-gray-800">
+    <div className="h-[83vh] flex gap-4 p-4 bg-gray-800 ">
       {/* Chat Section */}
-      <div className="flex flex-col w-3/4 h-full  rounded overflow-hidden">
+      <div className="flex flex-col w-3/4 h-full  rounded-lg overflow-hidden">
         {/* <h1 className="text-2xl font-bold text-purple-700 mb-4">
           Chat Room ID: 12257
         </h1> */}
-        <div className="flex-1 overflow-y-auto bg-white border border-gray-300 rounded-lg p-4 mb-4">
+        <div
+          ref={messagesEndRef}
+          className="flex-1 overflow-y-auto bg-gray-300 border border-gray-300 rounded-lg p-4 mb-4"
+        >
           {messages.map((message, index) => (
-            <div key={index} className="mb-2 text-gray-800">
+            <div key={index} className="mb-2 text-base text-gray-600 font-semibold">
               {message}
             </div>
           ))}
@@ -304,7 +309,7 @@ const ChatRoom: React.FC = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Send a message..."
             onKeyDown={handleKeyPress}
-            className="flex-grow px-4 py-2  rounded-lg focus:outline-none"
+            className="flex-grow px-4 py-2 bg-gray-300 rounded-lg font-semibold focus:outline-none text-base text-gray-600"
           />
           <button
             onClick={sendMessage}
@@ -317,12 +322,12 @@ const ChatRoom: React.FC = () => {
 
       {/* members section */}
       <div className="w-1/4 bg-gray-700 rounded-lg p-4 relative flex flex-col">
-        <h2 className="text-xl text-gray-400 font-semibold mb-4">Members</h2>
+        <h2 className="text-xl text-gray-200 font-semibold mb-4">Members</h2>
         <div className="space-y-2">
           {members.map((member, index) => (
             <div
               key={member.user_id}
-              className="flex justify-between p-2 bg-white border border-gray-300  rounded-lg text-base text-gray-600"
+              className="flex justify-between p-2 bg-gray-200 border border-gray-300  rounded-lg text-base text-gray-600 font-bold"
               onClick={() => {
                 console.log("otherUsersData");
                 console.log(otherUsersData);
