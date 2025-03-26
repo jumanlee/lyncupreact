@@ -52,7 +52,7 @@ const NavBar: React.FC = () => {
   }, [isAccountOpen, handleClickOutside]);
 
   return (
-    <div className="min-h-screen flex flex-col bg-gray-100">
+    <div className="flex flex-col min-h-screen bg-gray-100">
       {/* Navbar that is on every page */}
       <nav className="bg-gray-900 text-white p-4">
         <div className="container mx-auto flex justify-between items-center">
@@ -93,7 +93,7 @@ const NavBar: React.FC = () => {
 
               {isAccountOpen ? (
                 //ref={dropdownRef} tells React to assign a reference to the <div> after the component renders. dropdownRef.current is updated automatically by React after the component has mounted, ref expects a ref object (dropdownRef), not its .current property, this caused me problems!
-                <div className="absolute right-0 mt-2 w-36 bg-gray-800 text-gray-200 shadow-md rounded min-w-max overflow-hidden whitespace-nowrap">
+                <div className="absolute right-0 mt-2 w-36 bg-gray-800 text-gray-200 shadow-md rounded min-w-max overflow-hidden whitespace-nowrap z-50">
                   <Link
                     to="/profile"
                     className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
@@ -127,8 +127,8 @@ const NavBar: React.FC = () => {
 
       {/* The main app */}
       {/* outlet is a placeholder for where the nested child routes is rendered */}
-      {/* flex-min-0 means I want you to grow and take up leftover space (flex-grow), but allow shrinking if needed (min-h-0) */}
-      <main className="flex-grow flex flex-col min-h-0">
+      {/* flex-min-0 means  want you to grow and take up leftover space (flex-grow), but allow shrinking if needed (min-h-0) */}
+      <main className="flex-1">
         {/* the child routes render here */}
         <Outlet />
       </main>

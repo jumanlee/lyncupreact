@@ -284,13 +284,13 @@ const ChatRoom: React.FC = () => {
   };
 
   return (
-    <div className="flex flex-grow bg-gray-500 text-gray-800">
+    <div className="h-[83vh] flex gap-4 p-4 bg-gray-800">
       {/* Chat Section */}
-      <div className="flex flex-col flex-grow p-4">
+      <div className="flex flex-col w-3/4 h-full  rounded overflow-hidden">
         {/* <h1 className="text-2xl font-bold text-purple-700 mb-4">
           Chat Room ID: 12257
         </h1> */}
-        <div className="flex-grow overflow-y-auto bg-white border border-gray-300 rounded-lg p-4 mb-4">
+        <div className="flex-1 overflow-y-auto bg-white border border-gray-300 rounded-lg p-4 mb-4">
           {messages.map((message, index) => (
             <div key={index} className="mb-2 text-gray-800">
               {message}
@@ -304,11 +304,11 @@ const ChatRoom: React.FC = () => {
             onChange={(e) => setInputMessage(e.target.value)}
             placeholder="Send a message..."
             onKeyDown={handleKeyPress}
-            className="flex-grow px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-700"
+            className="flex-grow px-4 py-2  rounded-lg focus:outline-none"
           />
           <button
             onClick={sendMessage}
-            className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+            className="bg-gray-700 text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
           >
             Send
           </button>
@@ -316,8 +316,8 @@ const ChatRoom: React.FC = () => {
       </div>
 
       {/* members section */}
-      <div className="w-1/4 bg-gray-300 border-l border-gray-300 p-4 relative flex flex-col">
-        <h2 className="text-xl text-gray-800 font-semibold mb-4">Members</h2>
+      <div className="w-1/4 bg-gray-700 rounded-lg p-4 relative flex flex-col">
+        <h2 className="text-xl text-gray-400 font-semibold mb-4">Members</h2>
         <div className="space-y-2">
           {members.map((member, index) => (
             <div
@@ -379,7 +379,7 @@ const ChatRoom: React.FC = () => {
         <div className="mt-4 self-end">
           <button
             onClick={() => navigate("/")}
-            className="absolute bottom-4 right-4 bg-gray-600 text-gray-200 font-semibold py-2 px-5 rounded focus:outline-none"
+            className="absolute bottom-3 right-4 bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
           >
             Quit
           </button>
