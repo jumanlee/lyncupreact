@@ -171,7 +171,7 @@ const Queue: React.FC = () => {
               onClick={() => {
                 const remaining = getRefreshTokenRemainingTime();
                 //the limit is it remaiing time has to be at least 1 hour remaining (3600 secs)
-                if (remaining === null || remaining < 1) {
+                if (remaining === null || remaining < 3600) {
                   alert(
                     "Your session is about to expire. Please login again before queuing!"
                   );

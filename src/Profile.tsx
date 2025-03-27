@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "./axiom";
-
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "./App";
 
 const Profile: React.FC = () => {
   // interface OrganisationDetails {
@@ -47,8 +48,29 @@ const Profile: React.FC = () => {
     typeof setTimeout
   > | null>(null);
 
+  const { setIsAuthenticated } = useAuth();
+  const navigate = useNavigate();
+  //function to log out
+
+  const logout = () => {
+    //remove all the tokens from browser
+    localStorage.removeItem("access_token");
+    localStorage.removeItem("refresh_token");
+    //also remove the user id
+    localStorage.removeItem("user_id");
+    setIsAuthenticated(false);
+
+    navigate("/");
+  };
+
   useEffect(() => {
     const user_id = localStorage.getItem("user_id");
+
+    if (!user_id) {
+      alert("User ID is not saved in your local storage. Please log in again!");
+      logout();
+      return;
+    }
 
     axiosInstance
       .get(`users/showprofile/${user_id}`)
@@ -160,9 +182,26 @@ const Profile: React.FC = () => {
     });
   };
 
+  const hasEmptyField = () => {
+    if (!editProfileData) return true;
+
+    return Object.entries(editProfileData).some(
+      ([key, value]) =>
+        key !== "gender" &&
+        (value === null || value === undefined || value === "NA" || value == "")
+    );
+  };
+
   const handleSubmit = (event: React.FormEvent) => {
     //prevent default behaviour of reloading page after submission
     event.preventDefault();
+
+
+    //check that there's no empty field, if empty
+    // if (hasEmptyField()) {
+    //   alert("Please fill in all fields before submitting!");
+    //   return;
+    // }
 
     //Don't send {editProfileData}, send editProfileData as Django serializer expects the fields at the root level, not inside an "editProfileData" object!
     axiosInstance
@@ -185,14 +224,14 @@ const Profile: React.FC = () => {
           <h2 className="text-2xl text-gray-400 font-semibold">My Profile</h2>
           {edit ? (
             <button
-              onClick={() => setEdit(false)}
+              onClick={() => {setEdit(false); setSearchQuery("");}}
               className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
             >
               Cancel
             </button>
           ) : (
             <button
-              onClick={() => setEdit(true)}
+              onClick={() => {setEdit(true); setSearchQuery("");}}
               className="bg-[#4b1e1e]  text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
             >
               Edit
@@ -203,7 +242,10 @@ const Profile: React.FC = () => {
         <form onSubmit={handleSubmit}>
           <div className="mb-4">
             {/* htmlFor is just a way to connect a label to an input */}
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="firstname">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="firstname"
+            >
               First Name:{" "}
             </label>
             {edit ? (
@@ -217,13 +259,16 @@ const Profile: React.FC = () => {
                 className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.firstname ?? ""}
               </div>
             )}
           </div>
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="lastname">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="lastname"
+            >
               Last Name:{" "}
             </label>
             {edit ? (
@@ -237,13 +282,16 @@ const Profile: React.FC = () => {
                 className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.lastname ?? ""}
               </div>
             )}
           </div>
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="aboutme">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="aboutme"
+            >
               About me:{" "}
             </label>
             {edit ? (
@@ -257,13 +305,16 @@ const Profile: React.FC = () => {
                 className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.aboutme ?? ""}
               </div>
             )}
           </div>
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="citytown">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="citytown"
+            >
               City/Town:{" "}
             </label>
             {edit ? (
@@ -277,14 +328,17 @@ const Profile: React.FC = () => {
                 className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.citytown ?? ""}
               </div>
             )}
           </div>
 
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="country">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="country"
+            >
               Country:{" "}
             </label>
             {edit ? (
@@ -298,14 +352,17 @@ const Profile: React.FC = () => {
                 className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.country ?? ""}
               </div>
             )}
           </div>
 
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="age">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="age"
+            >
               Age:{" "}
             </label>
             {edit ? (
@@ -319,14 +376,17 @@ const Profile: React.FC = () => {
                 className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
               ></input>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.age ?? ""}
               </div>
             )}
           </div>
 
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="gender">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="gender"
+            >
               Gender:{" "}
             </label>
             {edit ? (
@@ -343,20 +403,23 @@ const Profile: React.FC = () => {
                 <option value="NA">Unspecified</option>
               </select>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
                 {profileData?.gender ?? ""}
               </div>
             )}
           </div>
           <div className="mb-4">
-            <label className="block mb-1 text-gray-400 font-semibold" htmlFor="organisation">
+            <label
+              className="block mb-1 text-gray-400 font-semibold"
+              htmlFor="organisation"
+            >
               Organisation:{" "}
             </label>
             {edit ? (
               <div className="relative" ref={inputRef}>
-              <div className="px-2 py-1 mb-2 bg-gray-700 rounded">
-                {editProfileData?.organisation_name ?? ""}
-              </div>
+                <div className="px-2 py-1 mb-2 bg-gray-700 rounded">
+                  {editProfileData?.organisation_name ?? ""}
+                </div>
                 <input
                   id="organisation"
                   autoComplete="off"
@@ -389,13 +452,13 @@ const Profile: React.FC = () => {
             )}
           </div>
           {edit && (
-          <button
-            type="submit"
-            className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
-          >
-            Submit
-          </button>)
-}
+            <button
+              type="submit"
+              className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+            >
+              Submit
+            </button>
+          )}
         </form>
       </div>
     </div>
