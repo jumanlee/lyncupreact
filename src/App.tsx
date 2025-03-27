@@ -6,6 +6,7 @@ import { Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./NavBar";
 import Profile from "./Profile";
 import Register from "./Register";
+import AboutUs from "./AboutUs";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension
@@ -104,7 +105,7 @@ const AuthRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
 //PublicRoute: when user is authenticated, they will be directed to /queue, otherwise they will be prompted to login
 const PublicRoute: React.FC = () => {
   const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? <AuthForm /> : <Navigate to="/queue" replace />;
+  return !isAuthenticated ? <AuthForm /> : <Navigate to="/aboutus" replace />;
 };
 
 const App: React.FC = () => {
@@ -139,6 +140,14 @@ const App: React.FC = () => {
               element={
                 <AuthRoute>
                   <Profile />
+                </AuthRoute>
+              }
+            />
+          <Route
+              path="/aboutus"
+              element={
+                <AuthRoute>
+                  <AboutUs />
                 </AuthRoute>
               }
             />

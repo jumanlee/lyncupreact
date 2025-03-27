@@ -286,7 +286,7 @@ const ChatRoom: React.FC = () => {
   }, [messages]);
 
   return (
-    <div className="h-[83vh] flex gap-4 p-4 bg-gray-800 ">
+    <div className="h-[83vh] flex gap-4 p-4 bg-gray-400 ">
       {/* Chat Section */}
       <div className="flex flex-col w-3/4 h-full  rounded-lg overflow-hidden">
         {/* <h1 className="text-2xl font-bold text-purple-700 mb-4">
@@ -297,7 +297,7 @@ const ChatRoom: React.FC = () => {
           className="flex-1 overflow-y-auto bg-gray-300 border border-gray-300 rounded-lg p-4 mb-4"
         >
           {messages.map((message, index) => (
-            <div key={index} className="mb-2 text-base text-gray-600 font-semibold">
+            <div key={index} className="mb-2 text-base text-gray-600 font-semibold break-words">
               {message}
             </div>
           ))}
@@ -313,7 +313,7 @@ const ChatRoom: React.FC = () => {
           />
           <button
             onClick={sendMessage}
-            className="bg-gray-700 text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+            className="bg-gray-900 hover:bg-gray-800 text-gray-400 font-semibold py-2 px-4 rounded-lg"
           >
             Send
           </button>
@@ -321,13 +321,13 @@ const ChatRoom: React.FC = () => {
       </div>
 
       {/* members section */}
-      <div className="w-1/4 bg-gray-700 rounded-lg p-4 relative flex flex-col">
-        <h2 className="text-xl text-gray-200 font-semibold mb-4">Members</h2>
+      <div className="w-1/4 bg-gray-800 rounded-lg p-4 relative flex flex-col">
+        <h2 className="text-xl text-gray-400 font-semibold mb-4">Members</h2>
         <div className="space-y-2">
           {members.map((member, index) => (
             <div
               key={member.user_id}
-              className="flex justify-between p-2 bg-gray-200 border border-gray-300  rounded-lg text-base text-gray-600 font-bold"
+              className="flex justify-between p-2 bg-gray-200 border border-gray-300 rounded-lg text-base text-gray-600 font-bold shadow-sm"
               onClick={() => {
                 console.log("otherUsersData");
                 console.log(otherUsersData);
@@ -383,8 +383,8 @@ const ChatRoom: React.FC = () => {
         {/* quit button aligned bottom-right */}
         <div className="mt-4 self-end">
           <button
-            onClick={() => navigate("/")}
-            className="absolute bottom-3 right-4 bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+            onClick={() => navigate("/queue")}
+            className="absolute bottom-3 right-3 bg-[#4b1e1e] hover:bg-[#4b1e1ecc] text-white font-semibold py-2 px-5 rounded-lg transition duration-150 shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-800"
           >
             Quit
           </button>

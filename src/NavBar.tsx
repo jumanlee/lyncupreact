@@ -64,10 +64,16 @@ const NavBar: React.FC = () => {
           </Link>
           <div className="flex space-x-4 items-center">
             <Link
-              to="/"
+              to="/queue"
               className="hover:opacity-80 text-gray-400 font-semibold "
             >
               Chat
+            </Link>
+            <Link
+              to="/aboutus"
+              className="hover:opacity-80 text-gray-400 font-semibold "
+            >
+              About Us
             </Link>
             {/* <Link
               to="/"
@@ -128,7 +134,7 @@ const NavBar: React.FC = () => {
       {/* The main app */}
       {/* outlet is a placeholder for where the nested child routes is rendered */}
       {/* flex-min-0 means  want you to grow and take up leftover space (flex-grow), but allow shrinking if needed (min-h-0) */}
-      <main className="flex-1">
+      <main className="flex-1 bg-gray-200">
         {/* the child routes render here */}
         <Outlet />
       </main>
