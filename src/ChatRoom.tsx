@@ -384,7 +384,7 @@ const ChatRoom: React.FC = () => {
         <div className="mt-4 self-end">
           <button
             onClick={() => navigate("/queue")}
-            className="absolute bottom-3 right-3 bg-[#4b1e1e] hover:bg-[#4b1e1ecc] text-white font-semibold py-2 px-5 rounded-lg transition duration-150 shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-800"
+            className="absolute bottom-3 right-3 bg-[#4b1e1e] hover:bg-[#4b1e1ecc] text-gray-400 font-bold py-2 px-5 rounded-lg transition duration-150 shadow hover:shadow-lg focus:outline-none focus:ring-2 focus:ring-red-800"
           >
             Quit
           </button>

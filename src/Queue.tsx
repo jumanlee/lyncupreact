@@ -146,15 +146,15 @@ const Queue: React.FC = () => {
   }, [triggeredEventListener]);
 
   return (
-    <div className="bg-gray-200 min-h-[calc(100vh-125px)] text-gray-700">
+    <div className="bg-gray-200 min-h-[calc(100vh-130px)] text-gray-700">
       <div className="max-w-4xl mx-auto text-center">
-        <div className="mb-5 mt-5 px-6 py-8">
+        <div className="mt-5 px-6 pt-8 pl-8 pt-8 ">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
             Ready for a quick chat?
           </h1>
 
           <p className="mb-4 text-lg">
-            LyncUp connects you with 3 other remote workers for a short,
+            LyncUp connects you with 2 or 3 other remote workers for a short,
             friendly convo, just like bumping into someone in the breakroom.
           </p>
 
@@ -165,9 +165,9 @@ const Queue: React.FC = () => {
         </div>
 
         {!triggeredEventListener ? (
-          <div>
+          <div className="mt-10">
             <button
-              className="bg-[#4b1e1e] hover:opacity-75 text-gray-200 font-semibold py-3 px-6 rounded"
+              className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
               onClick={() => {
                 const remaining = getRefreshTokenRemainingTime();
                 //the limit is it remaiing time has to be at least 1 hour remaining (3600 secs)
@@ -186,7 +186,7 @@ const Queue: React.FC = () => {
           </div>
         ) : (
           <div>
-            <div className="font-bold text-[25px] mb-4">
+            <div className="font-bold text-[25px] mb-2">
               Waiting to be matched...
             </div>
             <div className="flex justify-center items-center gap-2">
@@ -194,6 +194,14 @@ const Queue: React.FC = () => {
               <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce [animation-delay:0.2s]"></div>
               <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce [animation-delay:0.4s]"></div>
             </div>
+            <button
+              className="bg-gray-900 mt-8 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
+              onClick={() => {
+                  setTriggeredEventListener(false);
+              }}
+            >
+              Cancel
+            </button>
           </div>
         )}
       </div>

@@ -198,10 +198,10 @@ const Profile: React.FC = () => {
 
 
     //check that there's no empty field, if empty
-    // if (hasEmptyField()) {
-    //   alert("Please fill in all fields before submitting!");
-    //   return;
-    // }
+    if (hasEmptyField()) {
+      alert("Please fill in all fields before submitting!");
+      return;
+    }
 
     //Don't send {editProfileData}, send editProfileData as Django serializer expects the fields at the root level, not inside an "editProfileData" object!
     axiosInstance
@@ -417,7 +417,7 @@ const Profile: React.FC = () => {
             </label>
             {edit ? (
               <div className="relative" ref={inputRef}>
-                <div className="px-2 py-1 mb-2 bg-gray-700 rounded">
+                <div className="px-2 py-1 mb-2 bg-gray-700 min-h-[2rem] rounded">
                   {editProfileData?.organisation_name ?? ""}
                 </div>
                 <input
@@ -446,7 +446,7 @@ const Profile: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 rounded">
+              <div className="px-2 py-1 bg-gray-700 min-h-[2rem] rounded">
                 {profileData?.organisation_name ?? ""}
               </div>
             )}
