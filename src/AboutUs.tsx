@@ -12,9 +12,8 @@ const AboutUs: React.FC = () => {
         </h1>
 
         <p className="mb-4 text-lg">
-          <strong>Working remotely doesn't mean working alone.</strong> LyncUp
-          is here to bring back the human side of work — the part that's been
-          missing since you left the office.
+          <strong>Working remotely doesn't mean loneliness.</strong> LyncUp
+          is here to bring back the human side of remote working!
         </p>
 
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
@@ -26,20 +25,20 @@ const AboutUs: React.FC = () => {
           hallway or watercooler moments back in the office.
         </p>
         <p className="mb-4 text-lg">
-          You'll be placed in a <strong>group chat with 3 other people</strong>{" "}
-          — no pressure, no awkward intros, just an easy, friendly break.
+          You'll be placed in a <strong>group chat with 2 or 3 other people</strong>,{" "}
+          with no pressure, no awkward intros, just an easy, friendly break.
         </p>
 
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
           Why does this matter?
         </h2>
         <ul className="list-disc list-inside mb-4 text-lg">
-          <li>Bumping into people at the coffee machine</li>
-          <li>Quick, random convos that spark ideas</li>
-          <li>Feeling part of something bigger than your task list</li>
+          <li>We aim to replicate socialisation at the coffee machine</li>
+          <li>Quick, random convos that help you meet other professionals virtually</li>
+          <li>You get to feel a sense of community within the remote working world!</li>
         </ul>
         <p className="mb-4 text-lg">
-          LyncUp exists to fix that — one short chat at a time.
+          LyncUp exists to provide you with opportunities to socialise!
         </p>
 
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
@@ -50,9 +49,9 @@ const AboutUs: React.FC = () => {
             Hit <strong>“Join Queue”</strong>
           </li>
           <li>
-            We match you with <strong>3 other remote workers</strong>
+            We match you with <strong>2 or 3 other remote workers</strong> who are also seeking to meet new people during their coffee breaks!
           </li>
-          <li>You chat — like a digital breakroom</li>
+          <li>You then chat, making it like a digital breakroom</li>
           <li>
             Hit the <strong>“Like” button</strong> next to people you enjoyed
             chatting with
@@ -87,7 +86,7 @@ const AboutUs: React.FC = () => {
             Ready to meet someone new?
           </h3>
           <p className="mb-6 text-lg">
-            Click below to get matched with 3 others for a casual, friendly
+            Click below to get matched with others for a casual, friendly
             chat.
           </p>
           <button
