@@ -1,7 +1,9 @@
-## LyncUp Frontend React Codebase
-The backend Django codebase is here: https://github.com/jumanlee/lyncupdjango
+## LyncUp Frontend React Codebase (React + TypeScript + Vite):
+LyncUp is a full-stack web app built with Django, React, PostgreSQL, Redis, Celery, and Docker.
+It connects users in small social chat groups based on simple liking behaviour and helps simulate spontaneous social interactions.
 
-## React + TypeScript + Vite
+## The backend Django codebase is here: 
+https://github.com/jumanlee/lyncupdjango
 
 ## To Install Dependencies:
 ```
