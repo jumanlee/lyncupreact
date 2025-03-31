@@ -1,4 +1,20 @@
-# React + TypeScript + Vite
+## LyncUp Frontend React Codebase
+The backend Django codebase is here: https://github.com/jumanlee/lyncupdjango
+
+## React + TypeScript + Vite
+
+## To Install Dependencies:
+```
+npm install
+```
+
+## To Test the App:
+```
+npm run dev
+```
+
+# Some Setup Tips If Needed:
+Vite React Setup: https://www.youtube.com/watch?v=RbZyQWOEmD0
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
 
