@@ -1,5 +1,5 @@
 import React, { useState, ChangeEvent } from "react";
-import axiosInstance from "./axiom";
+import axiosPublicInstance from "./axiomPublic";
 import { useNavigate } from "react-router-dom";
 
 
@@ -41,7 +41,7 @@ const Register: React.FC = () => {
         return;
       }
       
-    axiosInstance
+      axiosPublicInstance
       .post("users/register/", registerData)
       .then((response) => {
         console.log(response);
