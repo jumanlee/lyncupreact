@@ -7,6 +7,8 @@ import Navbar from "./NavBar";
 import Profile from "./Profile";
 import Register from "./Register";
 import AboutUs from "./AboutUs";
+import VerifySuccess from "./VerifySuccess";
+import VerifyFail from "./VerifyFail";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension
@@ -102,7 +104,7 @@ const AuthRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
-//PublicRoute: when user is authenticated, they will be directed to /queue, otherwise they will be prompted to login
+//PublicRoute: when user is authenticated, they will be directed to /aboutus, otherwise they will be prompted to login
 const PublicRoute: React.FC = () => {
   const { isAuthenticated } = useAuth();
   return !isAuthenticated ? <AuthForm /> : <Navigate to="/aboutus" replace />;
@@ -115,6 +117,8 @@ const App: React.FC = () => {
         <Routes>
           {/* If unauthenticated, show the login page, or if authenticated e.g. there's a token, then just navigate to the queue page */}
           <Route path="/" element={<PublicRoute />} />
+          <Route path="/verify-success" element={<VerifySuccess />} />
+          <Route path="/verify-fail" element={<VerifyFail />} />
           <Route path="/register" element={<Register />} />
 
           {/* For authenticated users. This set is only reached if the route path matches /chat, /queue etc, as defined below, which the PublicRoute component only redirects when authenticated. */}
