@@ -1,10 +1,8 @@
-import React, { useState, ChangeEvent, FormEvent, useEffect } from "react";
+import React, { useState, ChangeEvent } from "react";
+import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiom";
-import { useNavigate, Link } from "react-router-dom";
 import { jwtDecode, JwtPayload } from "jwt-decode";
 import { useAuth } from "./App";
-
-//css library component from https://tailwindui.com/components/application-ui/forms/sign-in-forms
 
 interface LoginData {
   email: string;
@@ -12,132 +10,113 @@ interface LoginData {
 }
 
 const AuthForm: React.FC = () => {
+  const navigate = useNavigate();
+  const { setIsAuthenticated } = useAuth();
+
   const [loginData, setLoginData] = useState<LoginData>({
     email: "",
     password: "",
   });
 
-  const { setIsAuthenticated } = useAuth();
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
-    //e.target is the input element. name is attribute of html.
     const { name, value } = e.target;
-    setLoginData({ ...loginData, [name]: value });
+    setLoginData(prev => ({ ...prev, [name]: value }));
+    //clear message while typing
+    setFeedback(null);              
   };
 
-  //unlike ChangeEvent, often don't need to specify a type parameter with FormEvent when it's used with form submission because form submissions are generally handled at the form level, not on individual elements within the form.
-  const handleLoginSubmit = async (event: React.FormEvent) => {
-    //prevent default refresh
-    event.preventDefault();
+  const handleLoginSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    setFeedback(null);
 
     try {
-      const response = await axiosInstance.post("token/", loginData);
-      localStorage.setItem("access_token", response.data.access);
-      localStorage.setItem("refresh_token", response.data.refresh);
+      const resp = await axiosInstance.post("token/", loginData);
 
+      localStorage.setItem("access_token", resp.data.access);
+      localStorage.setItem("refresh_token", resp.data.refresh);
       setIsAuthenticated(true);
 
-      //define the payload type
-      interface CustomJwtPayLoad extends JwtPayload {
+      interface CustomJwt extends JwtPayload {
         user_id: number;
       }
-
-      //save the user id in local storage
-      try {
-        const decoded_token = jwtDecode<CustomJwtPayLoad>(response.data.access);
-        localStorage.setItem("user_id", decoded_token.user_id.toString());
-      } catch (error) {
-        console.error(error);
-        console.log("Failed to save user id in local storage");
-      }
+      const decoded = jwtDecode<CustomJwt>(resp.data.access);
+      localStorage.setItem("user_id", decoded.user_id.toString());
 
       navigate("/queue");
-    } catch (error) {
-      console.error(error);
-      alert("The email and or password are wrong! Please try again!");
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.detail ||
+        "The email and/or password are wrong. Please try again.";
+      setFeedback(msg);
+    } finally {
+      setLoading(false);
     }
   };
 
-  // const logout = () => {
-  //   //remove all the tokens from browser
-  //   localStorage.removeItem("access_token");
-  //   localStorage.removeItem("refresh_token");
-  //   //also remove the user id
-  //   localStorage.removeItem("user_id");
-  //   setIsLoggedIn(false);
-  //   setLoginData({
-  //     email: "",
-  //     password: "",
-  //   });
-  // };
-
-  //useEffect to check if the user is already logged in or not. If already logged in, it the page will display "welcome to LyncUp" otherwise, it will show the form required to log in. Remember, I'm using dummy tokens here.
-  useEffect(() => {
-    // const accessToken = localStorage.getItem("access_token");
-    // if (accessToken) {
-    //   setIsLoggedIn(true);
-    // }
-  }, []);
-
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-lg mx-auto bg-gray-800 text-gray-200 p-6 rounded shadow-md">
-        <h2 className="text-2xl text-gray-400 font-semibold mb-6 text-center">
+    <div className="bg-gray-200 min-h-screen flex items-center justify-center text-gray-700">
+      <div className="max-w-md w-full mx-4 bg-white p-8 rounded-2xl shadow-lg">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Welcome to LyncUp!
         </h2>
-        <form onSubmit={handleLoginSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Email:
+
+        <form onSubmit={handleLoginSubmit} className="space-y-4">
+          {/* email */}
+          <div>
+            <label htmlFor="email" className="block mb-1 font-semibold">
+              Email
             </label>
             <input
               id="email"
+              name="email"
               type="email"
-              name="email" 
               autoComplete="off"
               value={loginData.email}
               onChange={handleLoginChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 text-gray-200 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Password:
+
+          {/* password */}
+          <div>
+            <label htmlFor="password" className="block mb-1 font-semibold">
+              Password
             </label>
             <input
               id="password"
-              type="password"
               name="password"
-              autoComplete="new-password"
+              type="password"
+              autoComplete="current-password"
               value={loginData.password}
               onChange={handleLoginChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
-            >
-              Log In
-            </button>
-          </div>
+
+          {feedback && (
+            <p className="text-sm text-red-600 text-center">{feedback}</p>
+          )}
+
+          {/* submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-2 rounded-2xl disabled:opacity-50"
+          >
+            {loading ? "Logging in..." : "Log In"}
+          </button>
         </form>
-        <div className="mt-5 flex items-center justify-center">
-          <button onClick={() => navigate("/register")}>
-            <span className="text-gray-400 text-sm font-semibold">
-              Don't have an account?
-            </span>{" "}
-            <span className="text-gray-200 text-sm font-bold">
-              Register now!
-            </span>
+
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => navigate("/register")}
+            className="text-gray-900 font-semibold hover:underline"
+          >
+            Don't have an account? Register now!
           </button>
         </div>
       </div>

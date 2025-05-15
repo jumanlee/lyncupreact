@@ -22,7 +22,7 @@ const VerifyFail: React.FC = () => {
         { email }
       );
       //"Verification email resent."
-      setFeedback(data.detail); 
+      setFeedback(data.detail);
     } catch (err: any) {
       //err.response.data.detail comes from your DRF view
       const msg = err.response?.data?.detail || "Failed to send. Try again.";
@@ -66,16 +66,9 @@ const VerifyFail: React.FC = () => {
 
           <button
             onClick={() => navigate("/")}
-            className="
-              border border-gray-900
-              text-gray-900
-              font-semibold
-              py-2 px-4
-              rounded-2xl
-              hover:bg-gray-100
-            "
+            className="text-gray-900 font-semibold hover:underline"
           >
-            Back
+            Back to login
           </button>
         </div>
       </div>

@@ -1,7 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
-import axiosPublicInstance from "./axiomPublic";
 import { useNavigate } from "react-router-dom";
-
+import axiosPublicInstance from "./axiomPublic";
 
 interface RegisterData {
   email: string;
@@ -13,6 +12,7 @@ interface RegisterData {
 }
 
 const Register: React.FC = () => {
+  const navigate   = useNavigate();
   const [registerData, setRegisterData] = useState<RegisterData>({
     email: "",
     username: "",
@@ -21,167 +21,162 @@ const Register: React.FC = () => {
     firstname: "",
     lastname: "",
   });
-
-  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [feedback, setFeedback] = useState<string | null>(null);
 
   const handleRegisterChange = (e: ChangeEvent<HTMLInputElement>) => {
-    //e.target is the input element. name is attribute of html.
     const { name, value } = e.target;
-    setRegisterData({ ...registerData, [name]: value });
+    setRegisterData(prev => ({ ...prev, [name]: value }));
   };
 
-  //unlike ChangeEvent, often don't need to specify a type parameter with FormEvent when it's used with form submission because form submissions are generally handled at the form level, not on individual elements within the form.
-  const handleRegisterSubmit = (event: React.FormEvent) => {
-    //prevent default refresh
-    event.preventDefault();
+  const handleRegisterSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    setFeedback(null);
 
-    //double check passwords
     if (registerData.password !== registerData.password2) {
-        alert("Passwords do not match");
-        return;
-      }
-      
-      axiosPublicInstance
-      .post("users/register/", registerData)
-      .then((response) => {
-        console.log(response);
-        alert("Register successful! Please log in with your credentials.");
-        navigate("/");
-      })
-      .catch((error) => {
-        console.error(error);
-        alert("Registration failed. Please try again");
-      });
+      setFeedback("Passwords do not match.");
+      return;
+    }
+
+    setLoading(true);
+    try {
+      await axiosPublicInstance.post("users/register/", registerData);
+      alert("Register successful! Check your inbox to verify your email.");
+      navigate("/");               // back to login
+    } catch (err: any) {
+      const msg =
+        err.response?.data?.detail ||
+        "Registration failed. Please check your details and try again.";
+      setFeedback(msg);
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
-    <div className="min-h-screen flex items-center justify-center px-4">
-      <div className="w-full max-w-lg mx-auto bg-gray-800 text-gray-200 p-6 rounded shadow-md">
-        <h2 className="text-2xl text-gray-400 font-semibold mb-6 text-center">
-          Register a LyncUp account
+    <div className="bg-gray-200 min-h-screen flex items-center justify-center text-gray-700">
+      <div className="max-w-md w-full mx-4 bg-white p-8 rounded-2xl shadow-lg">
+        <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
+          Create your LyncUp account
         </h2>
-        <form onSubmit={handleRegisterSubmit}>
-          <div className="mb-4">
-            <label
-              htmlFor="email"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Email:
+
+        <form onSubmit={handleRegisterSubmit} className="space-y-4">
+          {/* email */}
+          <div>
+            <label htmlFor="email" className="block mb-1 font-semibold">
+              Email
             </label>
             <input
               id="email"
-              type="email"
               name="email"
+              type="email"
               autoComplete="off"
               value={registerData.email}
               onChange={handleRegisterChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 
-                           focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="username"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Username:
+
+          {/* username */}
+          <div>
+            <label htmlFor="username" className="block mb-1 font-semibold">
+              Username
             </label>
             <input
               id="username"
-              type="text"
               name="username"
+              type="text"
               autoComplete="off"
               value={registerData.username}
               onChange={handleRegisterChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 
-                           focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="firstname"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              First Name:
-            </label>
-            <input
-              id="firstname"
-              type="text"
-              name="firstname"
-              autoComplete="off"
-              value={registerData.firstname}
-              onChange={handleRegisterChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 
-                           focus:outline-none focus:ring-1 focus:ring-gray-500"
-            />
+
+          {/* first / last name side-by-side */}
+          <div className="flex space-x-4">
+            <div className="flex-1">
+              <label htmlFor="firstname" className="block mb-1 font-semibold">
+                First name
+              </label>
+              <input
+                id="firstname"
+                name="firstname"
+                type="text"
+                autoComplete="off"
+                value={registerData.firstname}
+                onChange={handleRegisterChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+              />
+            </div>
+            <div className="flex-1">
+              <label htmlFor="lastname" className="block mb-1 font-semibold">
+                Last name
+              </label>
+              <input
+                id="lastname"
+                name="lastname"
+                type="text"
+                autoComplete="off"
+                value={registerData.lastname}
+                onChange={handleRegisterChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+              />
+            </div>
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="lastname"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Last Name:
-            </label>
-            <input
-              id="lastname"
-              type="text"
-              name="lastname"
-              autoComplete="off"
-              value={registerData.lastname}
-              onChange={handleRegisterChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 
-                           focus:outline-none focus:ring-1 focus:ring-gray-500"
-            />
-          </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Password:
+
+          {/* passwords */}
+          <div>
+            <label htmlFor="password" className="block mb-1 font-semibold">
+              Password
             </label>
             <input
               id="password"
-              type="password"
               name="password"
+              type="password"
+              autoComplete="new-password"
               value={registerData.password}
               onChange={handleRegisterChange}
-              autoComplete="new-password"
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
-          <div className="mb-4">
-            <label
-              htmlFor="password2"
-              className="block mb-1 text-gray-400 font-semibold"
-            >
-              Confirm Password:
+
+          <div>
+            <label htmlFor="password2" className="block mb-1 font-semibold">
+              Confirm password
             </label>
             <input
               id="password2"
-              type="password"
               name="password2"
+              type="password"
               autoComplete="new-password"
               value={registerData.password2}
               onChange={handleRegisterChange}
-              className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
-        
-          <div className="flex justify-center">
-            <button
-              type="submit"
-              className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
-            >
-              Register
-            </button>
-          </div>
+
+          {feedback && (
+            <p className="text-sm text-red-600 text-center">{feedback}</p>
+          )}
+
+          {/* submit */}
+          <button
+            type="submit"
+            disabled={loading}
+            className="w-full bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-2 rounded-2xl disabled:opacity-50"
+          >
+            {loading ? "Registering..." : "Register"}
+          </button>
         </form>
-        <div className="mt-5 flex items-center justify-center">
-          <button onClick={() => navigate("/")}>
-            <span className="text-gray-400 text-sm font-semibold">
-              Back to login.
-            </span>
+
+        {/* back link */}
+        <div className="mt-6 text-center">
+          <button
+            onClick={() => navigate("/")}
+            className="text-gray-900 font-semibold hover:underline"
+          >
+            Back to login
           </button>
         </div>
       </div>
