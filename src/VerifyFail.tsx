@@ -39,7 +39,7 @@ const VerifyFail: React.FC = () => {
           Failed to Verify Email!
         </h1>
         <p className="mb-6 text-lg">
-          Unfortunately, we were unable to verify your email address. Please
+          Unfortunately, your email has not been verified. Please
           check the link you received in your email or try again below:
         </p>
 

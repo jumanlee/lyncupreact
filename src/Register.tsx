@@ -12,8 +12,9 @@ interface RegisterData {
 }
 
 const Register: React.FC = () => {
-  const navigate   = useNavigate();
-  const [registerData, setRegisterData] = useState<RegisterData>({
+  const navigate = useNavigate();
+
+  const [form, setForm] = useState<RegisterData>({
     email: "",
     username: "",
     password: "",
@@ -24,30 +25,46 @@ const Register: React.FC = () => {
   const [loading, setLoading] = useState(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const handleRegisterChange = (e: ChangeEvent<HTMLInputElement>) => {
+  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setRegisterData(prev => ({ ...prev, [name]: value }));
+    setForm(prev => ({ ...prev, [name]: value }));
   };
 
-  const handleRegisterSubmit = async (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFeedback(null);
 
-    if (registerData.password !== registerData.password2) {
+    if (form.password !== form.password2) {
       setFeedback("Passwords do not match.");
       return;
     }
 
     setLoading(true);
     try {
-      await axiosPublicInstance.post("users/register/", registerData);
-      alert("Register successful! Check your inbox to verify your email.");
-      navigate("/");               // back to login
+      const { data } = await axiosPublicInstance.post(
+        "users/register/",
+        form
+      );
+
+      //brand-new user: no data.code
+      if (!data.code) {
+        alert(data.detail || "Register successful! Check your inbox.");
+        navigate("/");
+        return;
+      }
+
+      //existed but unverified: backend already resent
+      if (data.code === "verification_resent") {
+        setFeedback(data.detail);
+        return;
+      }
+
     } catch (err: any) {
-      const msg =
-        err.response?.data?.detail ||
-        "Registration failed. Please check your details and try again.";
-      setFeedback(msg);
+      const resp = err.response?.data;
+      setFeedback(
+        resp?.detail ||
+          "Registration failed. Please check your details and try again."
+      );
     } finally {
       setLoading(false);
     }
@@ -60,8 +77,8 @@ const Register: React.FC = () => {
           Create your LyncUp account
         </h2>
 
-        <form onSubmit={handleRegisterSubmit} className="space-y-4">
-          {/* email */}
+        <form onSubmit={handleSubmit} className="space-y-4">
+          {/* Email */}
           <div>
             <label htmlFor="email" className="block mb-1 font-semibold">
               Email
@@ -71,8 +88,8 @@ const Register: React.FC = () => {
               name="email"
               type="email"
               autoComplete="off"
-              value={registerData.email}
-              onChange={handleRegisterChange}
+              value={form.email}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
@@ -87,13 +104,13 @@ const Register: React.FC = () => {
               name="username"
               type="text"
               autoComplete="off"
-              value={registerData.username}
-              onChange={handleRegisterChange}
+              value={form.username}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
 
-          {/* first / last name side-by-side */}
+          {/* first and last names */}
           <div className="flex space-x-4">
             <div className="flex-1">
               <label htmlFor="firstname" className="block mb-1 font-semibold">
@@ -104,8 +121,8 @@ const Register: React.FC = () => {
                 name="firstname"
                 type="text"
                 autoComplete="off"
-                value={registerData.firstname}
-                onChange={handleRegisterChange}
+                value={form.firstname}
+                onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               />
             </div>
@@ -118,14 +135,14 @@ const Register: React.FC = () => {
                 name="lastname"
                 type="text"
                 autoComplete="off"
-                value={registerData.lastname}
-                onChange={handleRegisterChange}
+                value={form.lastname}
+                onChange={handleChange}
                 className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               />
             </div>
           </div>
 
-          {/* passwords */}
+          {/* password */}
           <div>
             <label htmlFor="password" className="block mb-1 font-semibold">
               Password
@@ -135,12 +152,13 @@ const Register: React.FC = () => {
               name="password"
               type="password"
               autoComplete="new-password"
-              value={registerData.password}
-              onChange={handleRegisterChange}
+              value={form.password}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
 
+          {/* confirm password */}
           <div>
             <label htmlFor="password2" className="block mb-1 font-semibold">
               Confirm password
@@ -150,17 +168,20 @@ const Register: React.FC = () => {
               name="password2"
               type="password"
               autoComplete="new-password"
-              value={registerData.password2}
-              onChange={handleRegisterChange}
+              value={form.password2}
+              onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
             />
           </div>
 
+          {/* feedback */}
           {feedback && (
-            <p className="text-sm text-red-600 text-center">{feedback}</p>
+            <p className="text-sm text-red-600 whitespace-pre-line text-center">
+              {feedback}
+            </p>
           )}
 
-          {/* submit */}
+          {/* register */}
           <button
             type="submit"
             disabled={loading}
@@ -170,7 +191,7 @@ const Register: React.FC = () => {
           </button>
         </form>
 
-        {/* back link */}
+        {/* back to login */}
         <div className="mt-6 text-center">
           <button
             onClick={() => navigate("/")}
