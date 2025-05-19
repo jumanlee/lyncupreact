@@ -48,7 +48,7 @@ const Register: React.FC = () => {
 
       //brand-new user: no data.code
       if (!data.code) {
-        alert(data.detail || "Register successful! Check your inbox.");
+        alert(data.detail || "A verification link has been sent to your email! Please click the link to complete registration.");
         navigate("/");
         return;
       }
