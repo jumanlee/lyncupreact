@@ -118,6 +118,12 @@ const AuthForm: React.FC = () => {
           >
             Don't have an account? Register now!
           </button>
+          <button
+            onClick={() => navigate("/send-password-reset")}
+            className="text-gray-900 font-semibold hover:underline"
+          >
+            Forgot your password?
+          </button>
         </div>
       </div>
     </div>
