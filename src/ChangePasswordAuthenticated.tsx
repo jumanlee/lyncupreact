@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
 import axiosInstance from "./axiom";
-import { useAuth } from "./App";
+
 
 const ChangePasswordAuthenticated: React.FC = () => {
   const navigate = useNavigate();
@@ -11,19 +11,8 @@ const ChangePasswordAuthenticated: React.FC = () => {
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
-  const { setIsAuthenticated } = useAuth();
-
-  //custom function to log out but doesn't redirect to login page
-  const customLogout = () => {
-    //remove all the tokens from browser
-    localStorage.removeItem("access_token");
-    localStorage.removeItem("refresh_token");
-    //also remove the user id
-    localStorage.removeItem("user_id");
-    setIsAuthenticated(false);
 
 
-  };
 
   const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = event.target;
@@ -158,7 +147,7 @@ const ChangePasswordAuthenticated: React.FC = () => {
         </form>
         <div className="mt-6 text-center">
           <button
-            onClick={() => {customLogout(); navigate("/send-password-reset");}}
+            onClick={() => {navigate("/send-password-reset-authenticated");}}
             className="text-gray-900 font-semibold hover:underline"
           >
             Forgot your password?

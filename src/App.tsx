@@ -12,6 +12,7 @@ import VerifyFail from "./VerifyFail";
 import ResetPassword from "./ResetPassword";
 import SendPasswordReset from "./SendPasswordReset";
 import ChangePasswordAuthenticated from "./ChangePasswordAuthenticated";
+import SendPasswordResetAuthenticated from "./SendPasswordResetAuthenticated";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension
@@ -189,6 +190,10 @@ const App: React.FC = () => {
             <Route
               path="change-password-authenticated"
               element={<ChangePasswordAuthenticated />}
+            />
+            <Route
+              path="send-password-reset-authenticated"
+              element={<SendPasswordResetAuthenticated />}
             />
           </Route>
 
