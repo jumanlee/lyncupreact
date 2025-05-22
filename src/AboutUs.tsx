@@ -1,10 +1,6 @@
 import React from "react";
 import { useNavigate } from "react-router-dom";
 
-/**
- * About / Landing page – refined copy emphasizing detailed features clearly.
- * Colour palette, Tailwind classes, and layout preserved.
- */
 const AboutUs: React.FC = () => {
   const navigate = useNavigate();
 
@@ -24,7 +20,7 @@ const AboutUs: React.FC = () => {
           What exactly happens when you use LyncUp?
         </h2>
         <p className="mb-4 text-lg">
-          Simply press <strong>Join Queue</strong> to get matched into a private, casual chatroom with <strong>two or three other remote professionals</strong>. No long profiles to pre-enter, no awkward intros, just straightforward conversation prompts to help you quickly connect.
+          Simply press <strong>Join Queue</strong> to get matched into a private, casual chatroom with <strong>two or three other remote professionals</strong>. Before joining the queue to be matched, just ensure that your profile is up to date so that other users can see your bio and that you can get the most out of your experience.
         </p>
 
         {/* ─────────  WHY  ───────── */}
@@ -33,8 +29,9 @@ const AboutUs: React.FC = () => {
         </h2>
         <ul className="list-disc list-inside mb-4 text-lg">
           <li>Reduce isolation and loneliness common in remote working environments.</li>
-          <li>Build valuable professional connections through spontaneous, short conversations.</li>
-          <li>Recharge your day without the exhaustion of formal meetings or video calls.</li>
+          <li>Provide networking opportunities for remote workers</li>
+          <li>Build valuable professional connections through spontaneous conversations.</li>
+          <li>This can also be a way to get to know other remote workers and expand your LinkedIn network of professional friends</li>
         </ul>
 
         {/* ─────────  HOW  ───────── */}

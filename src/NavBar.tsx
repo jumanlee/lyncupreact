@@ -108,11 +108,11 @@ const NavBar: React.FC = () => {
                     Profile
                   </Link>
                   <Link
-                    to="/send-password-reset"
+                    to="/change-password-authenticated"
                     className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
                     onClick={() => setIsAccountOpen(false)}
                   >
-                    Reset Password
+                    Change Password
                   </Link>
                   {/* <Link
                     to="/settings"

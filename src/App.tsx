@@ -11,6 +11,7 @@ import VerifySuccess from "./VerifySuccess";
 import VerifyFail from "./VerifyFail";
 import ResetPassword from "./ResetPassword";
 import SendPasswordReset from "./SendPasswordReset";
+import ChangePasswordAuthenticated from "./ChangePasswordAuthenticated";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension
@@ -122,7 +123,10 @@ const App: React.FC = () => {
           <Route path="/verify-success" element={<VerifySuccess />} />
           <Route path="/verify-fail" element={<VerifyFail />} />
           <Route path="/register" element={<Register />} />
-          <Route path="/reset-password/:uidb64/:token" element={<ResetPassword />} />
+          <Route
+            path="/reset-password/:uidb64/:token"
+            element={<ResetPassword />}
+          />
           <Route path="/send-password-reset" element={<SendPasswordReset />} />
 
           {/* For authenticated users. This set is only reached if the route path matches /chat, /queue etc, as defined below, which the PublicRoute component only redirects when authenticated. */}
@@ -151,11 +155,19 @@ const App: React.FC = () => {
                 </AuthRoute>
               }
             />
-          <Route
+            <Route
               path="/aboutus"
               element={
                 <AuthRoute>
                   <AboutUs />
+                </AuthRoute>
+              }
+            />
+            <Route
+              path="/change-password-authenticated"
+              element={
+                <AuthRoute>
+                  <ChangePasswordAuthenticated />
                 </AuthRoute>
               }
             />
