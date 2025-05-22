@@ -66,10 +66,10 @@ const AboutUs: React.FC = () => {
 
         {/* ─────────  NO PRESSURE  ───────── */}
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
-          No pressure, just genuine connections
+          More opportunities for professional connections
         </h2>
         <p className="mb-4 text-lg">
-          Chats are short, friendly, and automatically timed. Likes remain anonymous, ensuring a relaxed environment free from performance anxiety. Join as often or as little as you like.
+          Likes remain anonymous, ensuring a relaxed environment free from performance anxiety. Join as often or as little as you like.
         </p>
 
         {/* ─────────  CTA  ───────── */}
