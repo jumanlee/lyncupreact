@@ -286,7 +286,7 @@ const ChatRoom: React.FC = () => {
   }, [messages]);
 
   return (
-    <div className="h-[83vh] flex gap-4 p-4 bg-gray-400 ">
+    <div className="h-screen flex gap-4 p-4 bg-gray-400 ">
       {/* Chat Section */}
       <div className="flex flex-col w-3/4 h-full  rounded-lg overflow-hidden">
         {/* <h1 className="text-2xl font-bold text-purple-700 mb-4">

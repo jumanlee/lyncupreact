@@ -175,6 +175,15 @@ const App: React.FC = () => {
 
           {/* authenticated route */}
           {/* For authenticated users. This set is only reached if the route path matches /chat, /queue etc, as defined below, which the PublicRoute component only redirects when authenticated. */}
+          {/* chatroom should not have navbar */}
+          <Route
+            path="/chat"
+            element={
+              <AuthRoute>
+                <ChatRoom />
+              </AuthRoute>
+            }
+          />
           <Route
             element={
               <AuthRoute>
@@ -183,7 +192,7 @@ const App: React.FC = () => {
             }
           >
             {/*children are RELATIVE, so they render in <Outlet/> as defined in NavBar.tsx*/}
-            <Route path="chat" element={<ChatRoom />} />
+            {/* <Route path="chat" element={<ChatRoom />} /> */}
             <Route path="queue" element={<Queue />} />
             <Route path="profile" element={<Profile />} />
             <Route path="aboutus" element={<AboutUs />} />
