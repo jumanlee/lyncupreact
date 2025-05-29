@@ -55,7 +55,7 @@ const AboutUs: React.FC = () => {
           How the matching algorithm learns from your past Like interactions
         </h2>
         <p className="mb-4 text-lg">
-          Every time you Like someone, the system notes your preference privately. Over time, it learns who you prefer interacting with and compares your Likes with those of other users to identify common preferences. In simple terms: it groups people who typically enjoy chatting with the same types of people.
+          Every time you Like someone, the algorithm notes your preference privately. Over time, it learns from your Like patterns and notes the type of users you prefer interacting with. It then compares your Likes with those of other users to identify common preferences. In simple terms: it learns people's preferences and groups together those who are likely to enjoy chatting with each other based on past interactions.
         </p>
         <p className="mb-4 text-lg">
           This helps ensure future matches become increasingly relevant and enjoyable. Yet, at times, the matches are intentionally varied, introducing new people and perspectives to keep conversations fresh and engaging.

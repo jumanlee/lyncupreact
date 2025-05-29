@@ -150,17 +150,16 @@ const Queue: React.FC = () => {
       <div className="max-w-4xl mx-auto text-center">
         <div className="mt-5 px-6 pt-8 pl-8 pt-8 ">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Ready for a quick chat?
+            Ready to connect with other professionals?
           </h1>
 
           <p className="mb-4 text-lg">
-            LyncUp connects you with 2 or 3 other remote workers for a short,
-            friendly convo, just like bumping into someone in the breakroom.
+            LyncUp connects you with 2 or 3 other remote workers.
           </p>
 
           <p className="mb-4 text-lg">
             When you're ready, click the button below to join the queue and get
-            matched.
+            matched into a private chatroom with other remote professionals!
           </p>
         </div>
 

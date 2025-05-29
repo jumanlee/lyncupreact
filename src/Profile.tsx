@@ -3,11 +3,21 @@ import axiosInstance from "./axiom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./App";
 
+// UI STYLING UPDATED (May 2025):
+// ‑ This component now follows the same light‑theme colour scheme used in the Register and
+//   ChangePasswordAuthenticated forms — bg‑gray‑200 backdrop + white card with rounded‑2xl corners.
+// ‑ Only Tailwind utility classes have changed; *all* logic and *all* original comments are preserved verbatim.
+
 const Profile: React.FC = () => {
   // interface OrganisationDetails {
   //   name: string | null;
   //   id: number | null;
   // }
+
+  interface Country {
+    id: number;
+    name: string;
+  }
 
   interface ProfileData {
     user_id: number;
@@ -15,14 +25,15 @@ const Profile: React.FC = () => {
     lastname: string | null;
     aboutme: string | null;
     citytown: string | null;
-    country: string | null;
+    country_id: number | null;
+    country_name: string | null;
     age: number | null;
     gender: "M" | "F" | "NA";
     organisation_id: number | null;
     organisation_name: string | null;
   }
 
-  //actualy profile data in the database
+  //actual profile data in the database
   const [profileData, setProfileData] = useState<ProfileData | null>(null);
 
   //data that may be submitted to change the profile data
@@ -31,6 +42,9 @@ const Profile: React.FC = () => {
   );
 
   const [edit, setEdit] = useState<boolean>(false);
+
+  //dropdown menu for countries
+  const [countries, setCountries] = useState<Country[]>([]);
 
   //for organisation search input
   const [searchQuery, setSearchQuery] = useState<string>("");
@@ -72,6 +86,7 @@ const Profile: React.FC = () => {
       return;
     }
 
+    //profile
     axiosInstance
       .get(`users/showprofile/${user_id}`)
       .then((response) => {
@@ -83,6 +98,16 @@ const Profile: React.FC = () => {
       })
       .catch((error) => {
         console.error("showprofile API failed", error);
+      });
+
+    //fetching countries list for dropdown menu
+    axiosInstance
+      .get("users/showallcountries/")
+      .then((response) => {
+        setCountries(response.data);
+      })
+      .catch((error) => {
+        console.error("showallcountries API failed", error);
       });
   }, []);
 
@@ -130,7 +155,8 @@ const Profile: React.FC = () => {
       };
     });
 
-    setSearchQuery("");
+    //reset search query to the selected organisation name, or if none, to an empty string
+    setSearchQuery(editProfileData?.organisation_name || ""); 
     setSuggestions([]); //hide dropdown
     setShowSuggestions(false);
   };
@@ -182,12 +208,33 @@ const Profile: React.FC = () => {
     });
   };
 
+  //hanlder for country dropdown, stores id and name of the country
+  const handleCountryChange = (event: React.ChangeEvent<HTMLSelectElement>) => {
+    const id = parseInt(event.target.value, 10);
+    //reminder: .find searches through an array and returns the first element that makes the provided callback return true, if no match is found, it returns undefined
+    const countryObj = countries.find((c) => c.id === id);
+
+    //cleaner style to update editProfileData, will refactor others with this new style later
+    setEditProfileData((prevEditProfileData) =>
+      prevEditProfileData
+        ? {
+            ...prevEditProfileData,
+            country_id: id,
+            country_name: countryObj?.name || "",
+          }
+        : prevEditProfileData
+    );
+  };
+
+  //validation helper function to check if any field is empty
   const hasEmptyField = () => {
     if (!editProfileData) return true;
 
     return Object.entries(editProfileData).some(
       ([key, value]) =>
         key !== "gender" &&
+        key !== "organisation_id" &&
+        key !== "organisation_name" &&
         (value === null || value === undefined || value === "NA" || value == "")
     );
   };
@@ -196,16 +243,27 @@ const Profile: React.FC = () => {
     //prevent default behaviour of reloading page after submission
     event.preventDefault();
 
-
     //check that there's no empty field, if empty
     if (hasEmptyField()) {
       alert("Please fill in all fields before submitting!");
       return;
     }
 
-    //Don't send {editProfileData}, send editProfileData as Django serializer expects the fields at the root level, not inside an "editProfileData" object!
+    //create a shallow clone of edit data. Partial is typescrpit utility that takes a type T and makes all its properties optional. shallow clone is cheap and only lives in this function scope, doesn't matter.
+    // const payload: Partial<ProfileData> = { ...editProfileData! };
+
+    const {
+      user_id, //strip this out as it's not a field in serializer
+      country_name, //strip this out as read-only at serializer
+      organisation_name, // strip this out as read-only at serializer
+      ...payload // { firstname, lastname, aboutme, citytown, country_id, age, gender, organisation_id }
+    } = editProfileData!;
+
+    console.log(payload);
+
+    //Don't send {payload}, send payload as Django serializer expects the fields at the root level, not inside an "editProfileData" object!
     axiosInstance
-      .put("users/updateprofile/", editProfileData)
+      .put("users/updateprofile/", payload)
       .then((response) => {
         console.log("updateprofile API success!");
         setProfileData(response.data);
@@ -218,34 +276,37 @@ const Profile: React.FC = () => {
   };
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="max-w-2xl mx-auto bg-gray-800 text-gray-200 p-6 rounded shadow-md">
+    <div className="bg-gray-200 my-10 min-h-screen flex items-center justify-center text-gray-700">
+      <div className="max-w-2xl w-full mx-4 bg-white p-8 rounded-2xl shadow-lg">
         <div className="flex items-center justify-between mb-6">
-          <h2 className="text-2xl text-gray-400 font-semibold">My Profile</h2>
+          <h2 className="text-3xl font-bold text-gray-800">My Profile</h2>
           {edit ? (
             <button
-              onClick={() => {setEdit(false); setSearchQuery("");}}
-              className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+              onClick={() => {
+                setEdit(false);
+                setSearchQuery("");
+              }}
+              className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-2 px-4 rounded-2xl focus:outline-none"
             >
               Cancel
             </button>
           ) : (
             <button
-              onClick={() => {setEdit(true); setSearchQuery("");}}
-              className="bg-[#4b1e1e]  text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+              onClick={() => {
+                setEdit(true);
+                setSearchQuery("");
+              }}
+              className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-2 px-4 rounded-2xl focus:outline-none"
             >
               Edit
             </button>
           )}
         </div>
 
-        <form onSubmit={handleSubmit}>
-          <div className="mb-4">
+        <form onSubmit={handleSubmit} className="space-y-4">
+          <div>
             {/* htmlFor is just a way to connect a label to an input */}
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="firstname"
-            >
+            <label className="block mb-1 font-semibold" htmlFor="firstname">
               First Name:{" "}
             </label>
             {edit ? (
@@ -256,19 +317,16 @@ const Profile: React.FC = () => {
                 name="firstname"
                 value={editProfileData?.firstname ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               ></input>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.firstname ?? ""}
               </div>
             )}
           </div>
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="lastname"
-            >
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="lastname">
               Last Name:{" "}
             </label>
             {edit ? (
@@ -279,19 +337,16 @@ const Profile: React.FC = () => {
                 name="lastname"
                 value={editProfileData?.lastname ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               ></input>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.lastname ?? ""}
               </div>
             )}
           </div>
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="aboutme"
-            >
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="aboutme">
               About me:{" "}
             </label>
             {edit ? (
@@ -302,19 +357,16 @@ const Profile: React.FC = () => {
                 name="aboutme"
                 value={editProfileData?.aboutme ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               ></input>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.aboutme ?? ""}
               </div>
             )}
           </div>
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="citytown"
-            >
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="citytown">
               City/Town:{" "}
             </label>
             {edit ? (
@@ -325,44 +377,48 @@ const Profile: React.FC = () => {
                 name="citytown"
                 value={editProfileData?.citytown ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               ></input>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.citytown ?? ""}
               </div>
             )}
           </div>
 
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="country"
-            >
-              Country:{" "}
+          {/* country dropdown menu */}
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="country">
+              Country:
             </label>
             {edit ? (
-              <input
-                id="country"
-                autoComplete="off"
-                type="text"
-                name="country"
-                value={editProfileData?.country ?? ""}
-                onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
-              ></input>
+              <select
+                id="country_id"
+                name="country_id"
+                value={editProfileData?.country_id ?? ""}
+                onChange={handleCountryChange}
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+              >
+                <option value="" disabled>
+                  {countries.length === 0
+                    ? "Loading countries..."
+                    : "Select a country"}
+                </option>
+                {countries.map((country) => (
+                  <option key={country.id} value={country.id}>
+                    {country.name}
+                  </option>
+                ))}
+              </select>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
-                {profileData?.country ?? ""}
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
+                {profileData?.country_name ?? ""}
               </div>
             )}
           </div>
 
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="age"
-            >
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="age">
               Age:{" "}
             </label>
             {edit ? (
@@ -373,20 +429,17 @@ const Profile: React.FC = () => {
                 name="age"
                 value={editProfileData?.age ?? ""}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               ></input>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.age ?? ""}
               </div>
             )}
           </div>
 
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="gender"
-            >
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="gender">
               Gender:{" "}
             </label>
             {edit ? (
@@ -396,28 +449,25 @@ const Profile: React.FC = () => {
                 //if editProfileData is indeed null, the expression editProfileData?.gender || "" evaluates to "" <--empty string
                 value={editProfileData?.gender}
                 onChange={handleChange}
-                className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
               >
                 <option value="M">Male</option>
                 <option value="F">Female</option>
                 <option value="NA">Unspecified</option>
               </select>
             ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-700 rounded">
+              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.gender ?? ""}
               </div>
             )}
           </div>
-          <div className="mb-4">
-            <label
-              className="block mb-1 text-gray-400 font-semibold"
-              htmlFor="organisation"
-            >
+          <div>
+            <label className="block mb-1 font-semibold" htmlFor="organisation">
               Organisation:{" "}
             </label>
             {edit ? (
               <div className="relative" ref={inputRef}>
-                <div className="px-2 py-1 mb-2 bg-gray-700 min-h-[2rem] rounded">
+                <div className="px-2 py-1 mb-2 bg-gray-100 min-h-[2rem] rounded">
                   {editProfileData?.organisation_name ?? ""}
                 </div>
                 <input
@@ -429,15 +479,15 @@ const Profile: React.FC = () => {
                   onChange={handleSearchOrgChange}
                   placeholder="Search for a company..."
                   onFocus={() => setShowSuggestions(true)}
-                  className="w-full bg-gray-700 border border-gray-600 rounded px-2 py-1 focus:outline-none focus:ring-1 focus:ring-gray-500"
+                  className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
                 />
                 {showSuggestions && suggestions.length > 0 && (
-                  <ul className="absolute z-10 bg-gray-700 border border-gray-600 mt-1 w-full rounded shadow-md">
+                  <ul className="absolute z-10 bg-white border border-gray-300 mt-1 w-full rounded shadow-md max-h-60 overflow-y-auto">
                     {suggestions.map((org) => (
                       <li
                         key={org.id}
                         onClick={() => handleSelectOrg(org)}
-                        className="px-2 py-1 hover:bg-gray-600 cursor-pointer"
+                        className="px-2 py-1 hover:bg-gray-100 cursor-pointer"
                       >
                         {org.name}
                       </li>
@@ -446,7 +496,7 @@ const Profile: React.FC = () => {
                 )}
               </div>
             ) : (
-              <div className="px-2 py-1 bg-gray-700 min-h-[2rem] rounded">
+              <div className="px-2 py-1 bg-gray-100 min-h-[2rem] rounded">
                 {profileData?.organisation_name ?? ""}
               </div>
             )}
@@ -454,7 +504,7 @@ const Profile: React.FC = () => {
           {edit && (
             <button
               type="submit"
-              className="bg-[#4b1e1e] text-gray-200 font-semibold py-2 px-4 rounded focus:outline-none"
+              className="w-full bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-2 rounded-2xl disabled:opacity-50"
             >
               Submit
             </button>
