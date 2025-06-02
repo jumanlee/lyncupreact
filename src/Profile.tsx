@@ -3,11 +3,6 @@ import axiosInstance from "./axiom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "./App";
 
-// UI STYLING UPDATED (May 2025):
-// ‑ This component now follows the same light‑theme colour scheme used in the Register and
-//   ChangePasswordAuthenticated forms — bg‑gray‑200 backdrop + white card with rounded‑2xl corners.
-// ‑ Only Tailwind utility classes have changed; *all* logic and *all* original comments are preserved verbatim.
-
 const Profile: React.FC = () => {
   // interface OrganisationDetails {
   //   name: string | null;
@@ -24,7 +19,6 @@ const Profile: React.FC = () => {
     firstname: string | null;
     lastname: string | null;
     aboutme: string | null;
-    citytown: string | null;
     country_id: number | null;
     country_name: string | null;
     age: number | null;
@@ -156,7 +150,7 @@ const Profile: React.FC = () => {
     });
 
     //reset search query to the selected organisation name, or if none, to an empty string
-    setSearchQuery(editProfileData?.organisation_name || ""); 
+    setSearchQuery(editProfileData?.organisation_name || "");
     setSuggestions([]); //hide dropdown
     setShowSuggestions(false);
   };
@@ -185,7 +179,7 @@ const Profile: React.FC = () => {
     event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
   ) => {
     //data structure:
-    // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
+    // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person", "country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
 
     const { name, value } = event.target;
 
@@ -256,7 +250,7 @@ const Profile: React.FC = () => {
       user_id, //strip this out as it's not a field in serializer
       country_name, //strip this out as read-only at serializer
       organisation_name, // strip this out as read-only at serializer
-      ...payload // { firstname, lastname, aboutme, citytown, country_id, age, gender, organisation_id }
+      ...payload // { firstname, lastname, aboutme, country_id, age, gender, organisation_id }
     } = editProfileData!;
 
     console.log(payload);
@@ -362,26 +356,6 @@ const Profile: React.FC = () => {
             ) : (
               <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
                 {profileData?.aboutme ?? ""}
-              </div>
-            )}
-          </div>
-          <div>
-            <label className="block mb-1 font-semibold" htmlFor="citytown">
-              City/Town:{" "}
-            </label>
-            {edit ? (
-              <input
-                id="citytown"
-                autoComplete="off"
-                type="text"
-                name="citytown"
-                value={editProfileData?.citytown ?? ""}
-                onChange={handleChange}
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
-              ></input>
-            ) : (
-              <div className="px-2 py-1 min-h-[2rem] bg-gray-100 rounded">
-                {profileData?.citytown ?? ""}
               </div>
             )}
           </div>
@@ -494,6 +468,16 @@ const Profile: React.FC = () => {
                     ))}
                   </ul>
                 )}
+                <div className="text-sm text-gray-500 mt-2">
+                  If your organisation is not listed, please{" "}
+                  <a
+                    href="/"
+                    className="font-semibold text-gray-900 hover:underline"
+                  >
+                    contact us
+                  </a>{" "}
+                  to have your organisation added.
+                </div>
               </div>
             ) : (
               <div className="px-2 py-1 bg-gray-100 min-h-[2rem] rounded">
@@ -501,6 +485,7 @@ const Profile: React.FC = () => {
               </div>
             )}
           </div>
+
           {edit && (
             <button
               type="submit"

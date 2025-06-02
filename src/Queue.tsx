@@ -13,6 +13,9 @@ const Queue: React.FC = () => {
   const [triggeredEventListener, setTriggeredEventListener] =
     useState<boolean>(false);
 
+  //state to check if the user's profile is already completed.
+  const [isProfileCompleted, setIsProfileCompleted] = useState<boolean>(false);
+
   const getValidAccessToken = async (): Promise<string | null> => {
     let accessToken = localStorage.getItem("access_token");
     const refreshToken = localStorage.getItem("refresh_token");
@@ -145,6 +148,18 @@ const Queue: React.FC = () => {
     };
   }, [triggeredEventListener]);
 
+  //one-off API call to check if the user's profile is already completed, if not, then redirect to profile edit page.
+  useEffect(() => {
+    axiosInstance
+      .get("users/checkprofilecomplete/")
+      .then((response) => {
+        setIsProfileCompleted(response.data.profile_complete);
+      })
+      .catch((error) => {
+        console.error("checkprofilecomplete API failed", error);
+      });
+  }, []);
+
   return (
     <div className="bg-gray-200 min-h-[calc(100vh-130px)] text-gray-700">
       <div className="max-w-4xl mx-auto text-center">
@@ -168,6 +183,15 @@ const Queue: React.FC = () => {
             <button
               className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
               onClick={() => {
+                //check if the user's profile is completed, if not, redirect to profile edit page.
+                if (!isProfileCompleted) {
+                  alert(
+                    "Your profile is not yet complete! Please complete your profile before queuing."
+                  );
+                  navigate("/profile");
+                  return;
+                }
+
                 const remaining = getRefreshTokenRemainingTime();
                 //the limit is it remaiing time has to be at least 1 hour remaining (3600 secs)
                 if (remaining === null || remaining < 3600) {
@@ -196,7 +220,7 @@ const Queue: React.FC = () => {
             <button
               className="bg-gray-900 mt-8 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
               onClick={() => {
-                  setTriggeredEventListener(false);
+                setTriggeredEventListener(false);
               }}
             >
               Cancel

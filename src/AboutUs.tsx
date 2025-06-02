@@ -12,7 +12,9 @@ const AboutUs: React.FC = () => {
           Welcome to LyncUp
         </h1>
         <p className="mb-4 text-lg">
-          <strong>Remote working shouldn't mean isolated.</strong> LyncUp helps remote workers quickly connect, build meaningful professional networks, and feel a genuine sense of community.
+          <strong>Remote working shouldn't mean isolated.</strong> LyncUp helps
+          remote workers quickly connect, build meaningful professional
+          networks, and feel a genuine sense of community.
         </p>
 
         {/* ─────────  WHAT  ───────── */}
@@ -20,7 +22,13 @@ const AboutUs: React.FC = () => {
           What exactly happens when you use LyncUp?
         </h2>
         <p className="mb-4 text-lg">
-          Simply press <strong>Join Queue</strong> to get matched into a private, casual chatroom with <strong>two or three other remote professionals</strong>. Before joining the queue to be matched, just ensure that your profile is up to date so that other users can see your bio and that you can get the most out of your experience.
+          Simply press <strong>Join Queue</strong> to get matched into a private
+          chatroom with <strong>two or three other remote professionals</strong>
+          . LyncUp matches and groups users whom our algorithm predicts are
+          likely to enjoy engaging and interacting with each other in a
+          chatroom. Before joining the queue to be matched, just ensure that
+          your profile is up to date so that other users can see your bio and
+          that you can get the most out of your experience.
         </p>
 
         {/* ─────────  WHY  ───────── */}
@@ -28,10 +36,23 @@ const AboutUs: React.FC = () => {
           Why does this matter?
         </h2>
         <ul className="list-disc list-inside mb-4 text-lg">
-          <li>Reduce isolation and loneliness common in remote working environments.</li>
-          <li>Provide networking opportunities for remote workers</li>
-          <li>Build valuable professional connections through spontaneous conversations.</li>
-          <li>This can also be a way to get to know other remote workers and expand your LinkedIn network of professional friends</li>
+          <li>
+            LyncUp's matching engine matches users who are likely to enjoy
+            chatting with each other based on past interactions.
+          </li>
+          <li>
+            Reduces isolation and loneliness common in remote working
+            environments.
+          </li>
+          <li>Provides networking opportunities for remote workers</li>
+          <li>
+            Builds valuable professional connections through spontaneous
+            conversations.
+          </li>
+          <li>
+            This can also be a way to get to know other remote workers and
+            expand your LinkedIn network of professional friends
+          </li>
         </ul>
 
         {/* ─────────  HOW  ───────── */}
@@ -39,15 +60,25 @@ const AboutUs: React.FC = () => {
           How it works
         </h2>
         <ol className="list-decimal list-inside mb-4 text-lg">
-          <li>Click <strong>Join Queue</strong> whenever you want a quick networking break.</li>
-          <li>LyncUp tries to match you with <strong>2-3 other remote professionals</strong>, selected based on past likes (explained clearly below).</li>
+          <li>
+            Click <strong>Join Queue</strong> whenever you want a quick
+            networking break.
+          </li>
+          <li>
+            LyncUp's matching engine tries to match you with{" "}
+            <strong>2-3 other remote professionals</strong>, selected based on
+            past Like interactions (explained clearly below).
+          </li>
           <li>Engage in friendly conversation.</li>
           <li>
-            During your chat session, click the <strong>Like</strong> button next to each person you enjoyed chatting with. You can Like multiple people per session.
+            During your chat session, click the <strong>Like</strong> button
+            next to each person you enjoy chatting with. You can Like multiple
+            people per session.
           </li>
         </ol>
         <p className="mb-4 text-lg">
-          Your Likes are completely private and other participants never see who you've liked.
+          Your Likes are completely private and other participants never see who
+          you've liked.
         </p>
 
         {/* ─────────  MATCHING  ───────── */}
@@ -55,13 +86,23 @@ const AboutUs: React.FC = () => {
           How the matching algorithm learns from your past Like interactions
         </h2>
         <p className="mb-4 text-lg">
-          Every time you Like someone, the algorithm notes your preference privately. Over time, it learns from your Like patterns and notes the type of users you prefer interacting with. It then compares your Likes with those of other users to identify common preferences. In simple terms: it learns people's preferences and groups together those who are likely to enjoy chatting with each other based on past interactions.
+          Every time you Like someone, the algorithm notes your preference
+          privately. Over time, it learns from your Like patterns and notes the
+          type of users you prefer interacting with. It then compares your Likes
+          with those of other users to identify common preferences. In simple
+          terms: it learns people's preferences and groups together those who
+          are likely to enjoy chatting with each other based on past
+          interactions.
         </p>
         <p className="mb-4 text-lg">
-          This helps ensure future matches become increasingly relevant and enjoyable. Yet, at times, the matches are intentionally varied, introducing new people and perspectives to keep conversations fresh and engaging.
+          This helps ensure future matches become increasingly relevant and
+          enjoyable. Yet, at times, the matches are intentionally varied,
+          introducing new people and perspectives to keep conversations fresh
+          and engaging.
         </p>
         <p className="mb-4 text-lg">
-          <strong>The result:</strong> More enjoyable conversations, better connections, and no extra effort or intrusive data collection.
+          <strong>The result:</strong> More enjoyable conversations, better
+          connections, and no extra effort or intrusive data collection.
         </p>
 
         {/* ─────────  NO PRESSURE  ───────── */}
@@ -69,7 +110,8 @@ const AboutUs: React.FC = () => {
           More opportunities for professional connections
         </h2>
         <p className="mb-4 text-lg">
-          Likes remain anonymous, ensuring a relaxed environment free from performance anxiety. Join as often or as little as you like.
+          Likes remain anonymous, ensuring a relaxed environment free from
+          performance anxiety. Join as often or as little as you like.
         </p>
 
         {/* ─────────  CTA  ───────── */}
@@ -78,7 +120,8 @@ const AboutUs: React.FC = () => {
             Ready to connect?
           </h3>
           <p className="mb-6 text-lg">
-            Click below, grab your coffee, and experience effortless networking today.
+            Click below, grab your coffee, and experience effortless networking
+            today.
           </p>
           <button
             onClick={() => navigate("/queue")}
