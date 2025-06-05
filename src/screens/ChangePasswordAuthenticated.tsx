@@ -1,63 +1,71 @@
 import React, { useState, ChangeEvent } from "react";
-import { useNavigate, useParams } from "react-router-dom";
-import axiosPublicInstance from "./axiomPublic";
+import { useNavigate } from "react-router-dom";
+import axiosInstance from "../axiom";
 
-const ResetPassword: React.FC = () => {
+
+const ChangePasswordAuthenticated: React.FC = () => {
   const navigate = useNavigate();
 
-  //useParams is a React Router hook that lets us access url parameters from the current route
-  const { uidb64, token } = useParams<{ uidb64: string; token: string }>();
-
+  const [oldPassword, setOldPassword] = useState<string>("");
   const [newPassword, setNewPassword] = useState<string>("");
   const [confirmPassword, setConfirmPassword] = useState<string>("");
   const [loading, setLoading] = useState<boolean>(false);
   const [feedback, setFeedback] = useState<string | null>(null);
 
-  const handleChange = (e: ChangeEvent<HTMLInputElement>) => {
-    const { name, value } = e.target;
-    if (name === "newPassword") setNewPassword(value);
+
+
+  const handleChange = (event: ChangeEvent<HTMLInputElement>) => {
+    const { name, value } = event.target;
+    if (name === "oldPassword") setOldPassword(value);
+    else if (name === "newPassword") setNewPassword(value);
     else if (name === "confirmPassword") setConfirmPassword(value);
   };
 
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
+  const handleSubmit = async (event: React.FormEvent) => {
+    event.preventDefault();
     setFeedback(null);
 
-    if (newPassword !== confirmPassword) {
-      setFeedback("Passwords do not match.");
+    if (!oldPassword || !newPassword || !confirmPassword) {
+      setFeedback("Please fill in all fields.");
       return;
     }
 
-    if (!uidb64 || !token) {
-      setFeedback("Invalid reset link.");
+    if (newPassword !== confirmPassword) {
+      setFeedback("New password and confirmation do not match.");
       return;
     }
 
     setLoading(true);
     try {
-      const endpoint = `users/reset-password/${uidb64}/${token}/`;
-      const payload = { new_password: newPassword };
-      const { data } = await axiosPublicInstance.post(endpoint, payload);
+      const { data } = await axiosInstance.post(
+        "users/change-password-authenticated/",
+        {
+          old_password: oldPassword,
+          new_password: newPassword,
+          confirm_password: confirmPassword,
+        }
+      );
 
-      alert(data.detail || "Your password has been reset. Please log in.");
-      navigate("/");
+      alert(data.detail || "Password updated successfully.");
+
+      //go back to the previous page
+      navigate(-1);
     } catch (err: any) {
       const resp = err.response?.data;
 
-      //django rest framework returns a list of errors for new_password:
-    //   {
-    //     "detail": [
-    //       "This password is too common.",
-    //       "This password is too short. It must contain at least 8 characters."
-    //     ]
-    //   }
-      if (resp?.new_password) {
+      //    possible shapes coming from DRF:
+      //      { old_password: ["Old password is incorrect."] }
+      //      { new_password: ["This password is too common.", ...] }
+      //      { detail: "...some string..." }
+
+      if (resp?.old_password) {
+        setFeedback((resp.old_password as string[]).join("\n"));
+      } else if (resp?.new_password) {
         setFeedback((resp.new_password as string[]).join("\n"));
+      } else if (resp?.confirm_password) {
+        setFeedback((resp.confirm_password as string[]).join("\n"));
       } else {
-        setFeedback(
-          resp?.detail ||
-            "Password reset failed. Please check your link and try again."
-        );
+        setFeedback(resp?.detail || "Password change failed. Try again.");
       }
     } finally {
       setLoading(false);
@@ -68,10 +76,26 @@ const ResetPassword: React.FC = () => {
     <div className="bg-gray-200 min-h-screen flex items-center justify-center text-gray-700">
       <div className="max-w-md w-full mx-4 bg-white p-8 rounded-2xl shadow-lg">
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
-          Set a New Password
+          Change Password
         </h2>
 
         <form onSubmit={handleSubmit} className="space-y-4">
+          {/* old password */}
+          <div>
+            <label htmlFor="oldPassword" className="block mb-1 font-semibold">
+              Current Password
+            </label>
+            <input
+              id="oldPassword"
+              name="oldPassword"
+              type="password"
+              autoComplete="current-password"
+              value={oldPassword}
+              onChange={handleChange}
+              className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
+            />
+          </div>
+
           {/* New password */}
           <div>
             <label htmlFor="newPassword" className="block mb-1 font-semibold">
@@ -88,16 +112,17 @@ const ResetPassword: React.FC = () => {
             />
           </div>
 
-          {/* Confirm password */}
           <div>
-            <label htmlFor="confirmPassword" className="block mb-1 font-semibold">
+            <label
+              htmlFor="confirmPassword"
+              className="block mb-1 font-semibold"
+            >
               Confirm Password
             </label>
             <input
               id="confirmPassword"
               name="confirmPassword"
               type="password"
-              autoComplete="new-password"
               value={confirmPassword}
               onChange={handleChange}
               className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none"
@@ -117,17 +142,15 @@ const ResetPassword: React.FC = () => {
             disabled={loading}
             className="w-full bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-2 rounded-2xl disabled:opacity-50"
           >
-            {loading ? "Resetting..." : "Reset Password"}
+            {loading ? "Updating..." : "Update Password"}
           </button>
         </form>
-
-        {/* back to login */}
         <div className="mt-6 text-center">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => {navigate("/send-password-reset-authenticated");}}
             className="text-gray-900 font-semibold hover:underline"
           >
-            Back to login
+            Forgot your password?
           </button>
         </div>
       </div>
@@ -135,4 +158,4 @@ const ResetPassword: React.FC = () => {
   );
 };
 
-export default ResetPassword;
+export default ChangePasswordAuthenticated;

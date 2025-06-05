@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axiosInstance from "./axiom";
+import axiosInstance from "../axiom";
 import { useLocation, useNavigate } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
 

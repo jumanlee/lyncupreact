@@ -5,8 +5,7 @@ export interface ProfileData {
   firstname: string | null;
   lastname: string | null;
   aboutme: string | null;
-  citytown: string | null;
-  country: string | null;
+  country_name: string | null;
   age: number | null;
   gender: "M" | "F" | "NA";
   organisation_id: number | null;
@@ -37,7 +36,7 @@ const ProfileModal: React.FC<ProfileModalProps> = ({ profile, onClose }) => {
           <strong>About Me:</strong> {profile.aboutme || "N/A"}
         </p>
         <p>
-          <strong>Location:</strong> {profile.citytown || "N/A"}, {profile.country || "N/A"}
+          <strong>Location:</strong> {profile.country_name || "N/A"}
         </p>
         <p>
           <strong>Age:</strong> {profile.age || "N/A"}

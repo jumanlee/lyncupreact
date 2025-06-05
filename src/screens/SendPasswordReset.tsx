@@ -1,6 +1,6 @@
 import React, { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosPublicInstance from "./axiomPublic";
+import axiosPublicInstance from "../axiomPublic";
 
 const SendPasswordReset: React.FC = () => {
   const navigate = useNavigate();

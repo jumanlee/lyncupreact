@@ -1,18 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import AuthForm from "./Auth";
-import ChatRoom from "./ChatRoom";
-import Queue from "./Queue";
+import AuthForm from "./screens/Auth";
+import ChatRoom from "./screens/ChatRoom";
+import Queue from "./screens/Queue";
 import { Route, Routes, Navigate } from "react-router-dom";
-import Navbar from "./NavBar";
-import Profile from "./Profile";
-import Register from "./Register";
-import AboutUs from "./AboutUs";
-import VerifySuccess from "./VerifySuccess";
-import VerifyFail from "./VerifyFail";
-import ResetPassword from "./ResetPassword";
-import SendPasswordReset from "./SendPasswordReset";
-import ChangePasswordAuthenticated from "./ChangePasswordAuthenticated";
-import SendPasswordResetAuthenticated from "./SendPasswordResetAuthenticated";
+import Navbar from "./screens/NavBar";
+import Profile from "./screens/Profile";
+import Register from "./screens/Register";
+import AboutUs from "./screens/AboutUs";
+import VerifySuccess from "./screens/VerifySuccess";
+import VerifyFail from "./screens/VerifyFail";
+import ResetPassword from "./screens/ResetPassword";
+import SendPasswordReset from "./screens/SendPasswordReset";
+import ChangePasswordAuthenticated from "./screens/ChangePasswordAuthenticated";
+import SendPasswordResetAuthenticated from "./screens/SendPasswordResetAuthenticated";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension

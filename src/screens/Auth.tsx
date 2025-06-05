@@ -1,8 +1,8 @@
 import React, { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosInstance from "./axiom";
+import axiosInstance from "../axiom";
 import { jwtDecode, JwtPayload } from "jwt-decode";
-import { useAuth } from "./App";
+import { useAuth } from "../App";
 
 interface LoginData {
   email: string;

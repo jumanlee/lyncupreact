@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import axiosInstance from "./axiom"; // Import your Axios instance
+import axiosInstance from "../axiom"; // Import your Axios instance
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./App";
+import { useAuth } from "../App";
 
 const Queue: React.FC = () => {
   //consider using atob instead of localstorage for token storage, for later development
@@ -75,6 +75,7 @@ const Queue: React.FC = () => {
     }
   };
 
+  //will refactor this later
   const logout = () => {
     //remove all the tokens from browser
     localStorage.removeItem("access_token");

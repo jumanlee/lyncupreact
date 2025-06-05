@@ -1,13 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
-import axiosInstance from "./axiom";
+import axiosInstance from "../axiom";
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./App";
+import { useAuth } from "../App";
 
 const Profile: React.FC = () => {
-  // interface OrganisationDetails {
-  //   name: string | null;
-  //   id: number | null;
-  // }
 
   interface Country {
     id: number;
@@ -60,6 +56,7 @@ const Profile: React.FC = () => {
   const navigate = useNavigate();
   //function to log out
 
+  //will refactor this later
   const logout = () => {
     //remove all the tokens from browser
     localStorage.removeItem("access_token");
@@ -437,7 +434,7 @@ const Profile: React.FC = () => {
           </div>
           <div>
             <label className="block mb-1 font-semibold" htmlFor="organisation">
-              Organisation:{" "}
+              Organisation (optional):{" "}
             </label>
             {edit ? (
               <div className="relative" ref={inputRef}>

@@ -1,7 +1,7 @@
 import React, { useState, ChangeEvent } from "react";
 import { useNavigate } from "react-router-dom";
-import axiosPublicInstance from "./axiomPublic";
-import { useAuth } from "./App";
+import axiosPublicInstance from "../axiomPublic";
+import { useAuth } from "../App";
 
 //password reset page for logged in users
 const SendPasswordResetAuthenticated: React.FC = () => {
