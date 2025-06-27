@@ -1,6 +1,6 @@
 import { Link, Outlet, useNavigate } from "react-router-dom";
 import React, { useState, useRef, useEffect, useCallback } from "react";
-import { useAuth } from "./App";
+import { useAuth } from "../App";
 
 const NavBar: React.FC = () => {
   //hook state for account accordion
@@ -23,7 +23,7 @@ const NavBar: React.FC = () => {
     }
   }, []);
 
-  //function to log out
+  //function to log out, will refactor this later
   const logout = () => {
     //remove all the tokens from browser
     localStorage.removeItem("access_token");
@@ -106,6 +106,13 @@ const NavBar: React.FC = () => {
                     onClick={() => setIsAccountOpen(false)}
                   >
                     Profile
+                  </Link>
+                  <Link
+                    to="/change-password-authenticated"
+                    className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
+                    onClick={() => setIsAccountOpen(false)}
+                  >
+                    Change Password
                   </Link>
                   {/* <Link
                     to="/settings"

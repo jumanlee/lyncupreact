@@ -1,12 +1,18 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
-import AuthForm from "./Auth";
-import ChatRoom from "./ChatRoom";
-import Queue from "./Queue";
+import AuthForm from "./screens/Auth";
+import ChatRoom from "./screens/ChatRoom";
+import Queue from "./screens/Queue";
 import { Route, Routes, Navigate } from "react-router-dom";
-import Navbar from "./NavBar";
-import Profile from "./Profile";
-import Register from "./Register";
-import AboutUs from "./AboutUs";
+import Navbar from "./screens/NavBar";
+import Profile from "./screens/Profile";
+import Register from "./screens/Register";
+import AboutUs from "./screens/AboutUs";
+import VerifySuccess from "./screens/VerifySuccess";
+import VerifyFail from "./screens/VerifyFail";
+import ResetPassword from "./screens/ResetPassword";
+import SendPasswordReset from "./screens/SendPasswordReset";
+import ChangePasswordAuthenticated from "./screens/ChangePasswordAuthenticated";
+import SendPasswordResetAuthenticated from "./screens/SendPasswordResetAuthenticated";
 import axiosInstance from "./axiom";
 
 //Note: all code is formatted with Prettier extension
@@ -102,10 +108,10 @@ const AuthRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   return isAuthenticated ? children : <Navigate to="/" replace />;
 };
 
-//PublicRoute: when user is authenticated, they will be directed to /queue, otherwise they will be prompted to login
-const PublicRoute: React.FC = () => {
+//PublicRoute: when user is authenticated, they will be directed to /aboutus, otherwise they will be prompted to login
+const PublicRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   const { isAuthenticated } = useAuth();
-  return !isAuthenticated ? <AuthForm /> : <Navigate to="/aboutus" replace />;
+  return !isAuthenticated ? children : <Navigate to="/aboutus" replace />;
 };
 
 const App: React.FC = () => {
@@ -113,45 +119,95 @@ const App: React.FC = () => {
     <AuthProvider>
       <div className="bg-white min-h-screen w-full">
         <Routes>
-          {/* If unauthenticated, show the login page, or if authenticated e.g. there's a token, then just navigate to the queue page */}
-          <Route path="/" element={<PublicRoute />} />
-          <Route path="/register" element={<Register />} />
-
-          {/* For authenticated users. This set is only reached if the route path matches /chat, /queue etc, as defined below, which the PublicRoute component only redirects when authenticated. */}
-          <Route path="/" element={<Navbar />}>
-            <Route
-              path="/chat"
-              element={
-                <AuthRoute>
-                  <ChatRoom />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/queue"
-              element={
-                <AuthRoute>
-                  <Queue />
-                </AuthRoute>
-              }
-            />
-            <Route
-              path="/profile"
-              element={
-                <AuthRoute>
-                  <Profile />
-                </AuthRoute>
-              }
-            />
+          {/* public route */}
+          {/* If unauthenticated, show the login page or another child, or if authenticated e.g. there's a token, then just navigate to the queue page */}
+          {/* can't do route children nesting here like in auth route because <AuthRoute> wrapper is around a layout component (<Navbar/>) that itself renders an <Outlet/>, React-Router knows where to drop all those nested child routes. <PublicRoute> by contrast just returns a single component (e.g <AuthForm/>) or a <Navigate/> so it doesn’t render an <Outlet/>, so there’s nowhere for any nested <Route> to mount */}
           <Route
-              path="/aboutus"
-              element={
-                <AuthRoute>
-                  <AboutUs />
-                </AuthRoute>
-              }
+            path="/"
+            element={
+              <PublicRoute>
+                <AuthForm />
+              </PublicRoute>
+            }
+          />
+
+          {/* public one off pages */}
+          <Route
+            path="/verify-success"
+            element={
+              <PublicRoute>
+                <VerifySuccess />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/verify-fail"
+            element={
+              <PublicRoute>
+                <VerifyFail />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/register"
+            element={
+              <PublicRoute>
+                <Register />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/send-password-reset"
+            element={
+              <PublicRoute>
+                <SendPasswordReset />
+              </PublicRoute>
+            }
+          />
+          <Route
+            path="/reset-password/:uidb64/:token"
+            element={
+              <PublicRoute>
+                <ResetPassword />
+              </PublicRoute>
+            }
+          />
+
+          {/* authenticated route */}
+          {/* For authenticated users. This set is only reached if the route path matches /chat, /queue etc, as defined below, which the PublicRoute component only redirects when authenticated. */}
+          {/* chatroom should not have navbar */}
+          <Route
+            path="/chat"
+            element={
+              <AuthRoute>
+                <ChatRoom />
+              </AuthRoute>
+            }
+          />
+          <Route
+            element={
+              <AuthRoute>
+                <Navbar />
+              </AuthRoute>
+            }
+          >
+            {/*children are RELATIVE, so they render in <Outlet/> as defined in NavBar.tsx*/}
+            {/* <Route path="chat" element={<ChatRoom />} /> */}
+            <Route path="queue" element={<Queue />} />
+            <Route path="profile" element={<Profile />} />
+            <Route path="aboutus" element={<AboutUs />} />
+            <Route
+              path="change-password-authenticated"
+              element={<ChangePasswordAuthenticated />}
+            />
+            <Route
+              path="send-password-reset-authenticated"
+              element={<SendPasswordResetAuthenticated />}
             />
           </Route>
+
+          {/* fallback */}
+          <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
       </div>
     </AuthProvider>

@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
-import axiosInstance from "./axiom"; // Import your Axios instance
+import axiosInstance from "../axiom"; // Import your Axios instance
 import { useNavigate } from "react-router-dom";
-import { useAuth } from "./App";
+import { useAuth } from "../App";
 
 const Queue: React.FC = () => {
   //consider using atob instead of localstorage for token storage, for later development
@@ -12,6 +12,9 @@ const Queue: React.FC = () => {
   const isWebSocketInitialised = useRef<boolean>(false);
   const [triggeredEventListener, setTriggeredEventListener] =
     useState<boolean>(false);
+
+  //state to check if the user's profile is already completed.
+  const [isProfileCompleted, setIsProfileCompleted] = useState<boolean>(false);
 
   const getValidAccessToken = async (): Promise<string | null> => {
     let accessToken = localStorage.getItem("access_token");
@@ -72,6 +75,7 @@ const Queue: React.FC = () => {
     }
   };
 
+  //will refactor this later
   const logout = () => {
     //remove all the tokens from browser
     localStorage.removeItem("access_token");
@@ -145,22 +149,33 @@ const Queue: React.FC = () => {
     };
   }, [triggeredEventListener]);
 
+  //one-off API call to check if the user's profile is already completed, if not, then redirect to profile edit page.
+  useEffect(() => {
+    axiosInstance
+      .get("users/checkprofilecomplete/")
+      .then((response) => {
+        setIsProfileCompleted(response.data.profile_complete);
+      })
+      .catch((error) => {
+        console.error("checkprofilecomplete API failed", error);
+      });
+  }, []);
+
   return (
     <div className="bg-gray-200 min-h-[calc(100vh-130px)] text-gray-700">
       <div className="max-w-4xl mx-auto text-center">
         <div className="mt-5 px-6 pt-8 pl-8 pt-8 ">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Ready for a quick chat?
+            Ready to connect with other professionals?
           </h1>
 
           <p className="mb-4 text-lg">
-            LyncUp connects you with 2 or 3 other remote workers for a short,
-            friendly convo, just like bumping into someone in the breakroom.
+            LyncUp connects you with 2 or 3 other remote workers.
           </p>
 
           <p className="mb-4 text-lg">
             When you're ready, click the button below to join the queue and get
-            matched.
+            matched into a private chatroom with other remote professionals!
           </p>
         </div>
 
@@ -169,6 +184,15 @@ const Queue: React.FC = () => {
             <button
               className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
               onClick={() => {
+                //check if the user's profile is completed, if not, redirect to profile edit page.
+                if (!isProfileCompleted) {
+                  alert(
+                    "Your profile is not yet complete! Please complete your profile before queuing."
+                  );
+                  navigate("/profile");
+                  return;
+                }
+
                 const remaining = getRefreshTokenRemainingTime();
                 //the limit is it remaiing time has to be at least 1 hour remaining (3600 secs)
                 if (remaining === null || remaining < 3600) {
@@ -197,7 +221,7 @@ const Queue: React.FC = () => {
             <button
               className="bg-gray-900 mt-8 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
               onClick={() => {
-                  setTriggeredEventListener(false);
+                setTriggeredEventListener(false);
               }}
             >
               Cancel
