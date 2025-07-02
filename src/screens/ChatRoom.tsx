@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "../axiom";
 import { useLocation, useNavigate } from "react-router-dom";
 //icons taken from https://icons8.com/icons/set/thumbs-up--static--purple
+import.meta.env.VITE_DJANGO_URL; 
 
 import ProfileModal, { ProfileData } from "./ProfileModal";
 
@@ -94,7 +95,7 @@ const ChatRoom: React.FC = () => {
     }
 
     //open Websocket connection
-    const url = `ws://localhost:8080/ws/chat/${room_id}/?token=${token}`;
+    const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/chat/${room_id}/?token=${token}`;
 
     //return a promise to see whether websocket connections are properly establsihed
     return new Promise((resolve, reject) => {

@@ -88,6 +88,7 @@ const Profile: React.FC = () => {
         setSearchQuery(response.data.organisation_name || "");
       })
       .catch((error) => {
+        console.log(user_id)
         console.error("showprofile API failed", error);
       });
 

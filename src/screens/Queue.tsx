@@ -2,6 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "../axiom"; // Import your Axios instance
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../App";
+import.meta.env.VITE_DJANGO_URL; 
 
 const Queue: React.FC = () => {
   //consider using atob instead of localstorage for token storage, for later development
@@ -102,7 +103,7 @@ const Queue: React.FC = () => {
           return;
         }
 
-        const url = `ws://localhost:8080/ws/queue/?token=${token}`;
+        const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/queue/?token=${token}`;
         websocketRef.current = new WebSocket(url);
         // websocketRef.current = websocket;
 

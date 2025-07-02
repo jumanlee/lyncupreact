@@ -5,9 +5,14 @@ import axios, {
   AxiosResponse,
 } from "axios";
 
+import.meta.env.VITE_DJANGO_URL; 
+
+
 // this code taken from https://github.com/veryacademy/YT-Django-DRF-Simple-Blog-Series-JWT-Part-3/blob/master/react/blogapi/src/axios.js  I have adapted parts of the code.
 
-const baseURL = "http://localhost:8080/api/";
+// const baseURL = "http://localhost:8080/api/";
+const baseURL = `http://${import.meta.env.VITE_DJANGO_URL}/api/`;
+
 
 const axiosInstance: AxiosInstance = axios.create({
   baseURL: baseURL,

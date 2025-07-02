@@ -86,13 +86,27 @@ const AboutUs: React.FC = () => {
           How the matching algorithm learns from your past Like interactions
         </h2>
         <p className="mb-4 text-lg">
-          Every time you Like someone, the algorithm notes your preference
-          privately. Over time, it learns from your Like patterns and notes the
-          type of users you prefer interacting with. It then compares your Likes
-          with those of other users to identify common preferences. In simple
-          terms: it learns people's preferences and groups together those who
-          are likely to enjoy chatting with each other based on past
-          interactions.
+          Full technical details of the algorithm are explained in the backend
+          Github repo's{" "}
+          <a
+            href="https://github.com/jumanlee/lyncupdjango"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="text-blue-600 underline hover:text-blue-800"
+          >
+            README
+          </a>
+          .
+        </p>
+        <p className="mb-4 text-lg">
+          Conceptually, every time you Like someone, the algorithm privately
+          records your preference. Over time, it learns from your Like patterns
+          and predicts the type of users you prefer interacting with. It then
+          compares your Likes with those of other users to identify common
+          preferences. In subsequent matches, it uses these predictions to
+          connect you with like-minded users. In simple terms, it learns
+          people's preferences and groups together those who are likely to enjoy
+          chatting with each other based on past interactions.
         </p>
         <p className="mb-4 text-lg">
           This helps ensure future matches become increasingly relevant and
