@@ -26,3 +26,6 @@ dist-ssr
 #ignore .env
 *.env.*
 .env
+
+# Vite-specific cache
+.vite/
