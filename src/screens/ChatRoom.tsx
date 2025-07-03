@@ -325,7 +325,7 @@ const ChatRoom: React.FC = () => {
       <div className="w-1/4 bg-gray-800 rounded-lg p-4 relative flex flex-col">
         <h2 className="text-xl text-gray-400 font-semibold mb-4">Members</h2>
         <div className="space-y-2">
-          {members.map((member, index) => (
+          {members.map((member) => (
             <div
               key={member.user_id}
               className="flex justify-between p-2 bg-gray-200 border border-gray-300 rounded-lg text-base text-gray-600 font-bold shadow-sm"
