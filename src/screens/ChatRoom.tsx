@@ -95,7 +95,8 @@ const ChatRoom: React.FC = () => {
     }
 
     //open Websocket connection
-    const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/chat/${room_id}/?token=${token}`;
+    // const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/chat/${room_id}/?token=${token}`;
+    const url = `${import.meta.env.VITE_WS_URL}/ws/chat/${room_id}/?token=${token}`;
 
     //return a promise to see whether websocket connections are properly establsihed
     return new Promise((resolve, reject) => {

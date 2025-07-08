@@ -103,7 +103,8 @@ const Queue: React.FC = () => {
           return;
         }
 
-        const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/queue/?token=${token}`;
+        // const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/queue/?token=${token}`;
+        const url = `${import.meta.env.VITE_WS_URL}/ws/queue/?token=${token}`;
         websocketRef.current = new WebSocket(url);
         // websocketRef.current = websocket;
 
