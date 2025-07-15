@@ -257,7 +257,7 @@ const ChatRoom: React.FC = () => {
     //update like state in database with API
     axiosInstance
       .post(postString, { user_to: user_id })
-      .then((response) => {
+      .then(() => {
         // console.log(response);
         //update the likes state
         //check if the user_id is already in likes, if not, create with default false
