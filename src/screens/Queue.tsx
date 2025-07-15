@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from "react";
 import axiosInstance from "../axiom"; // Import your Axios instance
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../App";
-import.meta.env.VITE_DJANGO_URL; 
+import.meta.env.VITE_DJANGO_URL;
 
 const Queue: React.FC = () => {
   //consider using atob instead of localstorage for token storage, for later development
@@ -119,7 +119,7 @@ const Queue: React.FC = () => {
           //the double rendering in the console is  caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
 
           if (data["room_id"]) {
-            console.log("entered room_id navigate");
+            // console.log("entered room_id navigate");
             navigate("/chat", { state: { room_id: data["room_id"] } });
           } else {
             console.log("no room_id!");
@@ -168,16 +168,25 @@ const Queue: React.FC = () => {
       <div className="max-w-4xl mx-auto text-center">
         <div className="mt-5 px-6 pt-8 pl-8 pt-8 ">
           <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Ready to connect with other professionals?
+            Ready to Connect?
           </h1>
 
           <p className="mb-4 text-lg">
-            LyncUp connects you with 2 or 3 other remote workers.
+            Powered by machine learning, LyncUp finds the best possible match
+            from other professionals currently in the queue, placing you into a
+            private chatroom with 2-3 people who are predicted, based on past
+            interactions and preferences, to align with yours.
           </p>
 
           <p className="mb-4 text-lg">
-            When you're ready, click the button below to join the queue and get
-            matched into a private chatroom with other remote professionals!
+            To get started, make sure your{" "}
+            <button
+              onClick={() => navigate("/profile")}
+              className="text-gray-800 hover:text-gray-1000 font-semibold"
+            >
+              profile
+            </button>{" "}
+            is complete, then click below to enter the queue.
           </p>
         </div>
 

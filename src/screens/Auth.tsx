@@ -23,9 +23,9 @@ const AuthForm: React.FC = () => {
 
   const handleLoginChange = (e: ChangeEvent<HTMLInputElement>) => {
     const { name, value } = e.target;
-    setLoginData(prev => ({ ...prev, [name]: value }));
+    setLoginData((prev) => ({ ...prev, [name]: value }));
     //clear message while typing
-    setFeedback(null);              
+    setFeedback(null);
   };
 
   const handleLoginSubmit = async (e: React.FormEvent) => {
@@ -63,6 +63,9 @@ const AuthForm: React.FC = () => {
         <h2 className="text-3xl font-bold text-gray-800 mb-6 text-center">
           Welcome to LyncUp!
         </h2>
+        <p className="text-center text-xl text-gray-600 mb-6">
+          Machine Learning-Powered Chatroom Matching for Remote Professionals
+        </p>
 
         <form onSubmit={handleLoginSubmit} className="space-y-4">
           {/* email */}

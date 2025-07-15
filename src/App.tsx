@@ -131,6 +131,9 @@ const App: React.FC = () => {
             }
           />
 
+          <Route path="aboutus" element={<AboutUs />} />
+          <Route path="queue" element={<Queue />} />
+
           {/* public one off pages */}
           <Route
             path="/verify-success"
@@ -156,6 +159,7 @@ const App: React.FC = () => {
               </PublicRoute>
             }
           />
+
           <Route
             path="/send-password-reset"
             element={

@@ -61,8 +61,8 @@ const Register: React.FC = () => {
 
     } catch (err: any) {
       const resp = err.response?.data;
-      console.log("resp");
-      console.log(resp);
+      // console.log("resp");
+      // console.log(resp);
       setFeedback(
         //built in django password validation error returns "password" key, not detail. So we need another condition resp.password
         resp?.detail || (Array.isArray(resp?.password) ? resp.password.join("\n") : resp?.password) ||

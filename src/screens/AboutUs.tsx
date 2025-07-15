@@ -12,9 +12,18 @@ const AboutUs: React.FC = () => {
           Welcome to LyncUp
         </h1>
         <p className="mb-4 text-lg">
-          <strong>Remote working shouldn't mean isolated.</strong> LyncUp helps
-          remote workers quickly connect, build meaningful professional
-          networks, and feel a genuine sense of community.
+          Remote working shouldn't mean isolation. LyncUp is a machine
+          learning-powered platform designed specifically for remote
+          professionals to connect and build meaningful professional networks.
+          Using our powerful matching algorithm, LyncUp carefully selects and
+          connects users who are most likely to have valuable and enjoyable
+          interactions based on historical preferences and interactions.
+        </p>
+        <p className="mb-4 text-lg">
+          This significantly reduces feelings of isolation, enhances networking
+          opportunities, and creates meaningful professional relationships,
+          helping you expand your professional community and LinkedIn
+          connections.
         </p>
 
         {/* ─────────  WHAT  ───────── */}
@@ -22,38 +31,31 @@ const AboutUs: React.FC = () => {
           What exactly happens when you use LyncUp?
         </h2>
         <p className="mb-4 text-lg">
-          Simply press <strong>Join Queue</strong> to get matched into a private
-          chatroom with <strong>two or three other remote professionals</strong>
-          . LyncUp matches and groups users whom our algorithm predicts are
-          likely to enjoy engaging and interacting with each other in a
-          chatroom. Before joining the queue to be matched, just ensure that
-          your profile is up to date so that other users can see your bio and
-          that you can get the most out of your experience.
+          When you're ready to network, simply press{" "}
+          <button
+            onClick={() => navigate("/queue")}
+            className="text-gray-800 hover:text-gray-1000 font-semibold"
+          >
+            Queue
+          </button>.
+          LyncUp then finds the best possible match from other users currently in
+          the queue, placing you into a private chatroom with 2-3 people who are
+          predicted, based on past interactions and preferences, to align with
+          yours.
         </p>
-
-        {/* ─────────  WHY  ───────── */}
-        <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
-          Why does this matter?
-        </h2>
-        <ul className="list-disc list-inside mb-4 text-lg">
-          <li>
-            LyncUp's matching engine matches users who are likely to enjoy
-            chatting with each other based on past interactions.
-          </li>
-          <li>
-            Reduces isolation and loneliness common in remote working
-            environments.
-          </li>
-          <li>Provides networking opportunities for remote workers</li>
-          <li>
-            Builds valuable professional connections through spontaneous
-            conversations.
-          </li>
-          <li>
-            This can also be a way to get to know other remote workers and
-            expand your LinkedIn network of professional friends
-          </li>
-        </ul>
+        <p className="mb-4 text-lg">
+          Our sophisticated algorithm analyses past interaction patterns and
+          predicts compatibility, ensuring that your interactions are highly
+          relevant and productive. Make sure your{" "}
+          <button
+            onClick={() => navigate("/profile")}
+            className="text-gray-800 hover:text-gray-1000 font-semibold"
+          >
+            profile
+          </button>{" "}
+          is updated with relevant professional details so other users can see
+          your bio, ensuring a rich and productive networking experience.
+        </p>
 
         {/* ─────────  HOW  ───────── */}
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
@@ -61,29 +63,34 @@ const AboutUs: React.FC = () => {
         </h2>
         <ol className="list-decimal list-inside mb-4 text-lg">
           <li>
-            Click <strong>Join Queue</strong> whenever you want a quick
-            networking break.
+            Click{" "}
+            <button
+              onClick={() => navigate("/queue")}
+              className="text-gray-800 hover:text-gray-1000 font-semibold"
+            >
+              Queue
+            </button>{" "}
+            whenever you are looking to build your professional network.
           </li>
           <li>
-            LyncUp's matching engine tries to match you with{" "}
-            <strong>2-3 other remote professionals</strong>, selected based on
-            past Like interactions (explained clearly below).
+            LyncUp's powerful matching engine connects you with 2-3 other remote
+            professionals currently in the queue.
           </li>
-          <li>Engage in friendly conversation.</li>
+          <li>Engage in professional and meaningful conversation.</li>
           <li>
-            During your chat session, click the <strong>Like</strong> button
-            next to each person you enjoy chatting with. You can Like multiple
-            people per session.
+            During your chat session, use the Like button to privately indicate
+            fellow professionals you found particularly valuable or enjoyable to
+            interact with. You can Like multiple individuals per session.
           </li>
         </ol>
         <p className="mb-4 text-lg">
-          Your Likes are completely private and other participants never see who
-          you've liked.
+          Your Likes remain confidential and are never disclosed to other
+          participants.
         </p>
 
         {/* ─────────  MATCHING  ───────── */}
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
-          How the matching algorithm learns from your past Like interactions
+          Understanding the matching algorithm
         </h2>
         <p className="mb-4 text-lg">
           Full technical details of the algorithm are explained in the backend
@@ -99,42 +106,32 @@ const AboutUs: React.FC = () => {
           .
         </p>
         <p className="mb-4 text-lg">
-          Conceptually, every time you Like someone, the algorithm privately
-          records your preference. Over time, it learns from your Like patterns
-          and predicts the type of users you prefer interacting with. It then
-          compares your Likes with those of other users to identify common
-          preferences. In subsequent matches, it uses these predictions to
-          connect you with like-minded users. In simple terms, it learns
-          people's preferences and groups together those who are likely to enjoy
-          chatting with each other based on past interactions.
-        </p>
-        <p className="mb-4 text-lg">
-          This helps ensure future matches become increasingly relevant and
-          enjoyable. Yet, at times, the matches are intentionally varied,
-          introducing new people and perspectives to keep conversations fresh
-          and engaging.
-        </p>
-        <p className="mb-4 text-lg">
-          <strong>The result:</strong> More enjoyable conversations, better
-          connections, and no extra effort or intrusive data collection.
+          Each time you use the Like feature, our algorithm privately records
+          this data to understand your preferences. Over time, it creates a
+          nuanced profile of your interaction preferences and compares this
+          profile with those of other professionals to identify shared interests
+          and compatible interaction styles. This enables the algorithm to match
+          you more accurately and consistently with professionals whose
+          interaction styles and interests align closely with yours.
         </p>
 
         {/* ─────────  NO PRESSURE  ───────── */}
         <h2 className="text-2xl font-semibold text-gray-800 mt-10 mb-4">
-          More opportunities for professional connections
+          More opportunities for meaningful professional connections
         </h2>
         <p className="mb-4 text-lg">
-          Likes remain anonymous, ensuring a relaxed environment free from
-          performance anxiety. Join as often or as little as you like.
+          Likes remain anonymous, ensuring a comfortable and pressure-free
+          networking environment. Use LyncUp as frequently or infrequently as
+          your professional social needs require.
         </p>
 
         {/* ─────────  CTA  ───────── */}
         <div className="text-center mt-12">
           <h3 className="text-xl text-gray-800 font-semibold mb-4">
-            Ready to connect?
+            Ready to expand your professional network?
           </h3>
           <p className="mb-6 text-lg">
-            Click below, grab your coffee, and experience effortless networking
+            Click below to start connecting with relevant remote professionals
             today.
           </p>
           <button

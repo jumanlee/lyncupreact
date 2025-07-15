@@ -119,14 +119,14 @@ const ChatRoom: React.FC = () => {
 
       //websocket that listens to incoming info (including chat messages and members joined) from server. The chat messages include names of senders too, to be displayed.
       websocketRef.current.addEventListener("message", (event) => {
-        console.log("Message from server:", event.data);
+        // console.log("Message from server:", event.data);
         const data = JSON.parse(event.data);
 
         //the double rendering in the console is caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
         if (data.hasOwnProperty("text") && data["text"]) {
           setMessages((prevMessages) => {
-            console.log("Previous messages state:", prevMessages);
-            console.log("New message being added:", data["text"]);
+            // console.log("Previous messages state:", prevMessages);
+            // console.log("New message being added:", data["text"]);
             return [...prevMessages, data["text"]];
           });
         }
@@ -162,8 +162,8 @@ const ChatRoom: React.FC = () => {
     //data structure:
     // {"firstname":"Harry","lastname":"Potter","aboutme":"I'm a good person","citytown":"London","country":"UK","age":20,"gender":"M", organisation_id: 5, organisation_name: "Disney"}
     //path e.g.: /api/users/showmultiprofiles/?user_ids=1,2
-    console.log("members");
-    console.log(members);
+    // console.log("members");
+    // console.log(members);
     //retrieve all other users' ids. Important to use set as there could be a chance of duplication, so must prevent it.
     let otherUsersIdsSet = new Set();
     for (let i = 0; i < members.length; i++) {
@@ -175,7 +175,7 @@ const ChatRoom: React.FC = () => {
 
     //convert to array
     let otherUsersIdsArray = [...otherUsersIdsSet];
-    console.log(otherUsersIdsArray);
+    // console.log(otherUsersIdsArray);
 
     axiosInstance
       .get("users/showmultiprofiles/", {
@@ -222,7 +222,7 @@ const ChatRoom: React.FC = () => {
     if (selfUserId && members.length > 0) {
       getOtherUsersData();
     }
-    console.log(otherUsersData);
+    // console.log(otherUsersData);
   }, [members, selfUserId]);
 
   const sendMessage = () => {
@@ -258,7 +258,7 @@ const ChatRoom: React.FC = () => {
     axiosInstance
       .post(postString, { user_to: user_id })
       .then((response) => {
-        console.log(response);
+        // console.log(response);
         //update the likes state
         //check if the user_id is already in likes, if not, create with default false
         setLikes((prevLikes) => {
@@ -331,8 +331,8 @@ const ChatRoom: React.FC = () => {
               key={member.user_id}
               className="flex justify-between p-2 bg-gray-200 border border-gray-300 rounded-lg text-base text-gray-600 font-bold shadow-sm"
               onClick={() => {
-                console.log("otherUsersData");
-                console.log(otherUsersData);
+                // console.log("otherUsersData");
+                // console.log(otherUsersData);
                 if (Number(selfUserId) !== Number(member.user_id)) {
                   const profile = otherUsersData.find(
                     //don't need to first check if item has user_id in JS as it won't throw an error like in Python, it would just be undefined

@@ -7,7 +7,9 @@ import react from '@vitejs/plugin-react'
 // https://vite.dev/config/
 export default defineConfig({
   plugins: [react()],
-  base: process.env.VITE_BASE_PATH || "/lyncup",
+  // base: process.env.VITE_BASE_PATH || "/lyncup",
+  base: process.env.VITE_BASE_PATH || "/",
+
   // tells Vite what base URL the app will be served from after it’s built. This affects all the paths Vite generates in the final HTML and JS, especially for:
   // <script src=...>
   // image paths

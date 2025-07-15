@@ -3,6 +3,15 @@
     { "source": "/verify-success", "destination": "/index.html" },
     { "source": "/verify-fail", "destination": "/index.html" },
     { "source": "/reset-password/:rest*", "destination": "/index.html"},
-    { "source": "/reset-password-fail",  "destination": "/index.html"}
+    { "source": "/reset-password-fail",  "destination": "/index.html"},
+
+    { "source": "/register", "destination": "/index.html" },
+    { "source": "/send-password-reset", "destination": "/index.html" },
+    { "source": "/send-password-reset-authenticated", "destination": "/index.html" },
+    { "source": "/change-password-authenticated", "destination": "/index.html" },
+
+    { "source": "/queue", "destination": "/index.html" },
+    { "source": "/profile", "destination": "/index.html" },
+    { "source": "/aboutus",  "destination": "/index.html" }
   ]
 }

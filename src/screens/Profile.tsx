@@ -251,7 +251,7 @@ const Profile: React.FC = () => {
       ...payload // { firstname, lastname, aboutme, country_id, age, gender, organisation_id }
     } = editProfileData!;
 
-    console.log(payload);
+    // console.log(payload);
 
     //Don't send {payload}, send payload as Django serializer expects the fields at the root level, not inside an "editProfileData" object!
     axiosInstance
