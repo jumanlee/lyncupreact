@@ -1,9 +1,20 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
   <head>
     <meta charset="UTF-8" />
     <link rel="icon" type="image/svg+xml" href="/vite.svg" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+    <!-- 
+      the below prevents app from being indexed by search engines, 
+      since the app is still in prototype stage.
+
+      Note: A /public/robots.txt file is also included, which is 
+      automatically served at https://your-domain.com/robots.txt since it's in the public directory.
+      It doesn't need to be referenced here, crawlers check for it by default.
+    -->
+    <meta name="robots" content="noindex, nofollow" />
+
     <title>Vite + React + TS</title>
   </head>
   <body>

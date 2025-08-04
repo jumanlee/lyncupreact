@@ -13,11 +13,11 @@ const AboutUs: React.FC = () => {
         </h1>
         <p className="mb-4 text-lg">
           Remote working shouldn't mean isolation. LyncUp is a machine
-          learning-powered platform designed specifically for remote
-          professionals to connect and build meaningful professional networks.
-          Using our powerful matching algorithm, LyncUp carefully selects and
-          connects users who are most likely to have valuable and enjoyable
-          interactions based on historical preferences and interactions.
+          learning-powered platform designed specifically for remote workers to
+          connect and build meaningful professional networks. Using our powerful
+          matching algorithm, LyncUp matches users who are most likely to have
+          valuable and enjoyable interactions, based on historical preferences
+          and interactions.
         </p>
         <p className="mb-4 text-lg">
           This significantly reduces feelings of isolation, enhances networking
@@ -37,11 +37,11 @@ const AboutUs: React.FC = () => {
             className="text-gray-800 hover:text-gray-1000 font-semibold"
           >
             Queue
-          </button>.
-          LyncUp then finds the best possible match from other users currently in
-          the queue, placing you into a private chatroom with 2-3 people who are
-          predicted, based on past interactions and preferences, to align with
-          yours.
+          </button>
+          . LyncUp then finds the best possible match from other users currently
+          in the queue, placing you into a private chatroom with 2-3 people who
+          are predicted, based on past interactions and preferences, to align
+          with yours.
         </p>
         <p className="mb-4 text-lg">
           Our sophisticated algorithm analyses past interaction patterns and
