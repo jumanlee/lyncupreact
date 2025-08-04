@@ -96,7 +96,7 @@ const AboutUs: React.FC = () => {
           Full technical details of the algorithm are explained in the backend
           Github repo's{" "}
           <a
-            href="https://github.com/jumanlee/lyncupdjango"
+            href="https://github.com/jumanlee/lyncupdjango?tab=readme-ov-file#matching-algorithm-implementation"
             target="_blank"
             rel="noopener noreferrer"
             className="text-blue-600 underline hover:text-blue-800"
