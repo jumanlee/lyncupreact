@@ -1,5 +1,5 @@
 import React, { useState, useEffect, useRef } from "react";
-import axiosInstance from "../axiom"; // Import your Axios instance
+import axiosInstance from "../axiom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../App";
 import.meta.env.VITE_DJANGO_URL;
@@ -163,103 +163,118 @@ const Queue: React.FC = () => {
       });
   }, []);
 
+  const remaining = getRefreshTokenRemainingTime();
+
   return (
     <div className="bg-gray-200 min-h-[calc(100vh-130px)] text-gray-700">
-      <div className="max-w-4xl mx-auto text-center">
-        <div className="mt-5 px-6 pt-8 pl-8 pt-8 ">
-          <h1 className="text-3xl font-bold text-gray-800 mb-6">
-            Ready to Connect?
-          </h1>
-
-          <p className="mb-4 text-lg">
-            Powered by machine learning, LyncUp finds the best possible match
-            from other professionals currently in the queue, placing you into a
-            private chatroom with 2-3 people who are predicted, based on past
-            interactions and preferences, to align with yours.
-          </p>
-          {isAuthenticated ? (
-            <>
-              <p className="mb-4 text-lg">
-                To get started, make sure your{" "}
-                <button
-                  onClick={() => navigate("/profile")}
-                  className="text-gray-800 hover:text-gray-1000 font-semibold"
-                >
-                  profile
-                </button>{" "}
-                is complete, then click below to enter the queue.
-              </p>
-            </>
-          ) : (
-            <>
-              <p className="mb-4 text-lg">
-                Please{" "}
-                <button
-                  onClick={() => navigate("/login")}
-                  className="text-gray-800 hover:text-gray-1000 font-semibold"
-                >
-                  log in
-                </button>{" "}
-                before joining the queue.
-              </p>
-            </>
-          )}
-        </div>
-
-        {!triggeredEventListener ? (
-          <div className="mt-10">
-            <button
-              className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
-              onClick={() => {
-                if (!isAuthenticated) {
-                  alert("You are not logged in! Please login!");
-                  navigate("/login");
-                  return;
-                }
-                //check if the user's profile is completed, if not, redirect to profile edit page.
-                if (!isProfileCompleted) {
-                  alert(
-                    "Your profile is not yet complete! Please complete your profile before queuing."
-                  );
-                  navigate("/profile");
-                  return;
-                }
-
-                const remaining = getRefreshTokenRemainingTime();
-                //the limit is it remaiing time has to be at least 1 hour remaining (3600 secs)
-                if (remaining === null || remaining < 3600) {
-                  alert(
-                    "Your session is about to expire. Please login again before queuing!"
-                  );
-                  logout();
-                } else {
-                  setTriggeredEventListener(true);
-                }
-              }}
-            >
-              Queue
-            </button>
-          </div>
-        ) : (
+      <div className="max-w-6xl mx-auto px-6 py-12">
+        {/* main section */}
+        <section className="grid grid-cols-1 gap-8 items-start">
+          {/* Left: copy */}
           <div>
-            <div className="font-bold text-[25px] mb-2">
-              Waiting to be matched...
+            <span className="inline-block text-xs tracking-widest uppercase text-gray-500 font-semibold mb-3">
+              Join when you're ready
+            </span>
+            <h1 className="text-4xl md:text-5xl font-extrabold text-gray-900 leading-tight">
+              Ready to Connect?
+            </h1>
+
+            <p className="mt-4 text-lg text-gray-700">
+              Powered by machine learning, LyncUp finds the best possible match
+              from other professionals currently in the queue, placing you into
+              a private chatroom with 2-3 people who are predicted, based on
+              past interactions and preferences, to align with yours.
+            </p>
+
+            {/* auth / guidance copy */}
+            <div className="mt-4 text-lg">
+              {isAuthenticated ? (
+                <p>
+                  To get started, make sure your{" "}
+                  <button
+                    onClick={() => navigate("/profile")}
+                    className="font-semibold underline decoration-gray-400 underline-offset-2 hover:opacity-80"
+                  >
+                    profile
+                  </button>{" "}
+                  is complete, then click below to enter the queue.
+                </p>
+              ) : (
+                <p>
+                  Please{" "}
+                  <button
+                    onClick={() => navigate("/login")}
+                    className="font-semibold underline decoration-gray-400 underline-offset-2 hover:opacity-80"
+                  >
+                    log in
+                  </button>{" "}
+                  before joining the queue.
+                </p>
+              )}
             </div>
-            <div className="flex justify-center items-center gap-2">
-              <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce"></div>
-              <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce [animation-delay:0.2s]"></div>
-              <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce [animation-delay:0.4s]"></div>
-            </div>
-            <button
-              className="bg-gray-900 mt-8 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
-              onClick={() => {
-                setTriggeredEventListener(false);
-              }}
-            >
-              Cancel
-            </button>
+
+            {/* CTA(s) */}
+            {!triggeredEventListener ? (
+              <div className="mt-6 flex items-center gap-3">
+                <button
+                  className="px-8 py-3 rounded-full bg-gray-900 text-gray-100 font-semibold hover:bg-gray-800 transition"
+                  onClick={() => {
+                    if (!isAuthenticated) {
+                      alert("You are not logged in! Please login!");
+                      navigate("/login");
+                      return;
+                    }
+                    //check if the user's profile is completed, if not, redirect to profile edit page.
+                    if (!isProfileCompleted) {
+                      alert(
+                        "Your profile is not yet complete! Please complete your profile before queuing."
+                      );
+                      navigate("/profile");
+                      return;
+                    }
+
+                    //the limit is it remaiing time has to be at least 1 hour remaining (3600 secs)
+                    if (remaining === null || remaining < 3600) {
+                      alert(
+                        "Your session is about to expire. Please login again before queuing!"
+                      );
+                      logout();
+                    } else {
+                      setTriggeredEventListener(true);
+                    }
+                  }}
+                >
+                  Queue
+                </button>
+                {/* <button
+                  onClick={() => navigate("/aboutus")}
+                  className="px-6 py-2.5 rounded-full border-2 border-gray-700 text-gray-800 font-semibold hover:bg-gray-100 transition"
+                >
+                  Learn more
+                </button> */}
+              </div>
+            ) : (
+              <div className="mt-6">
+                <div className="font-bold text-[22px] mb-3">
+                  Waiting to be matched...
+                </div>
+                <div className="flex justify-start items-center gap-2">
+                  <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce"></div>
+                  <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce [animation-delay:0.2s]"></div>
+                  <div className="w-3 h-3 bg-gray-700 rounded-full animate-bounce [animation-delay:0.4s]"></div>
+                </div>
+                <button
+                  className="px-8 py-3 rounded-full bg-gray-900 mt-6 hover:bg-gray-800 text-gray-100 font-semibold transition"
+                  onClick={() => {
+                    setTriggeredEventListener(false);
+                  }}
+                >
+                  Cancel
+                </button>
+              </div>
+            )}
           </div>
-        )}
+        </section>
       </div>
     </div>
   );

@@ -58,20 +58,20 @@ const NavBar: React.FC = () => {
         <div className="container mx-auto flex justify-between items-center">
           <Link
             to="/"
-            className="text-xl text-gray-400 font-semibold hover:opacity-80"
+            className="text-xl text-gray-300 font-semibold hover:opacity-80"
           >
             LyncUp
           </Link>
           <div className="flex space-x-4 items-center">
             <Link
               to="/queue"
-              className="hover:opacity-80 text-gray-400 font-semibold "
+              className="hover:opacity-80 text-gray-300 font-semibold "
             >
               Chat
             </Link>
             <Link
               to="/aboutus"
-              className="hover:opacity-80 text-gray-400 font-semibold "
+              className="hover:opacity-80 text-gray-300 font-semibold "
             >
               About Us
             </Link>
@@ -91,7 +91,7 @@ const NavBar: React.FC = () => {
             {/* Account has dropdown accordion  */}
             <div className="relative" ref={dropdownRef}>
               <button
-                className="hover:opacity-80 focus:outline-none text-gray-400 font-semibold"
+                className="hover:opacity-80 focus:outline-none text-gray-300 font-semibold"
                 onClick={() => setIsAccountOpen(!isAccountOpen)}
               >
                 Account
@@ -102,14 +102,14 @@ const NavBar: React.FC = () => {
                 <div className="absolute right-0 mt-2 w-36 bg-gray-800 text-gray-200 shadow-md rounded min-w-max overflow-hidden whitespace-nowrap z-50">
                   <Link
                     to="/profile"
-                    className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
+                    className="block px-4 py-2 text-gray-300 hover:bg-gray-700"
                     onClick={() => setIsAccountOpen(false)}
                   >
                     Profile
                   </Link>
                   <Link
                     to="/change-password-authenticated"
-                    className="block px-4 py-2 text-gray-400 hover:bg-gray-700"
+                    className="block px-4 py-2 text-gray-300 hover:bg-gray-700"
                     onClick={() => setIsAccountOpen(false)}
                   >
                     Change Password
@@ -127,7 +127,7 @@ const NavBar: React.FC = () => {
                       logout();
                       setIsAccountOpen(false);
                     }}
-                    className="block w-full text-left text-gray-400 px-4 py-2 hover:bg-gray-700"
+                    className="block w-full text-left text-gray-300 px-4 py-2 hover:bg-gray-700"
                   >
                     Logout
                   </button>
@@ -146,7 +146,7 @@ const NavBar: React.FC = () => {
         <Outlet />
       </main>
 
-      <footer className="bg-gray-900 text-gray-400 font-semibold p-4 text-center mt-auto">
+      <footer className="bg-gray-900 text-gray-300 font-semibold p-4 text-center mt-auto">
         © 2025 LyncUp. All rights reserved.
       </footer>
     </div>

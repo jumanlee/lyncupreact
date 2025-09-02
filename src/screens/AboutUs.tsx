@@ -32,12 +32,14 @@ const AboutUs: React.FC = () => {
               >
                 Get started
               </button>
-              <Link
-                to="/aboutus"
+              <a
+                href="https://github.com/jumanlee/lyncupdjango?tab=readme-ov-file#lyncup"
+                target="_blank"
+                rel="noopener noreferrer"
                 className="px-5 py-2.5 rounded-full border-2 border-gray-700 text-gray-800 font-semibold hover:bg-gray-100 transition"
               >
                 Learn more
-              </Link>
+              </a>
             </div>
 
             {/* Social proof / small stats */}
@@ -125,7 +127,7 @@ const AboutUs: React.FC = () => {
             />
             <Card
               title="Small, focused rooms"
-              body="3-4 people per room keeps conversation natural and balanced. No overcrowded calls."
+              body="3-4 people per chatroom keeps conversation natural and balanced."
             />
             <Card
               title="Preference-learning"
@@ -152,7 +154,7 @@ const AboutUs: React.FC = () => {
             />
             <Step
               n={2}
-              text="Get matched into a room with 2-3 people who fit your interaction style."
+              text="Get matched automatically into a room with 2-3 people who fit your interaction style."
             />
             <Step
               n={3}
