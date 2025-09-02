@@ -4,6 +4,7 @@ import ChatRoom from "./screens/ChatRoom";
 import Queue from "./screens/Queue";
 import { Route, Routes, Navigate } from "react-router-dom";
 import Navbar from "./screens/NavBar";
+import PublicNavbar from "./screens/PublicNavBar";
 import Profile from "./screens/Profile";
 import Register from "./screens/Register";
 import AboutUs from "./screens/AboutUs";
@@ -114,6 +115,12 @@ const PublicRoute: React.FC<{ children: JSX.Element }> = ({ children }) => {
   return !isAuthenticated ? children : <Navigate to="/aboutus" replace />;
 };
 
+//navbar switcher
+const NavbarSwitcher: React.FC = () => {
+  const { isAuthenticated } = useAuth();
+  return isAuthenticated ? <Navbar /> : <PublicNavbar />;
+};
+
 const App: React.FC = () => {
   return (
     <AuthProvider>
@@ -122,14 +129,24 @@ const App: React.FC = () => {
           {/* public route */}
           {/* If unauthenticated, show the login page or another child, or if authenticated e.g. there's a token, then just navigate to the queue page */}
           {/* can't do route children nesting here like in auth route because <AuthRoute> wrapper is around a layout component (<Navbar/>) that itself renders an <Outlet/>, React-Router knows where to drop all those nested child routes. <PublicRoute> by contrast just returns a single component (e.g <AuthForm/>) or a <Navigate/> so it doesn’t render an <Outlet/>, so there’s nowhere for any nested <Route> to mount */}
-          <Route
+          {/* <Route
             path="/"
             element={
               <PublicRoute>
                 <AuthForm />
               </PublicRoute>
             }
-          />
+          /> */}
+
+          {/* normal pages with public navbar */}
+          <Route element={<NavbarSwitcher />}>
+            {/* Must use "index" instead, can't just use path "/" here as this is inside a inside a layout branch. A layout route is a <Route>. Has an element, but no path (or just a base path like /). Exists only to wrap child routes with some shared UI (like a navbar, sidebar, or layout grid). Must render an <Outlet /> inside its element so the child route’s component can be injected. Inside a layout branch "path='/'" is treated as an absolute path, not relative to the layout. So it “escapes” the layout instead of rendering into your <NavbarSwitcher>’s <Outlet />.*/}
+
+            <Route index element={<AboutUs />} />
+            {/*children are RELATIVE, so they render in <Outlet/> as defined in PublicNavBar.tsx*/}
+            <Route path="aboutus" element={<AboutUs />} />
+            <Route path="queue" element={<Queue />} />
+          </Route>
 
           {/* only for editing use */}
           {/* <Route path="aboutus" element={<AboutUs />} />
@@ -160,7 +177,14 @@ const App: React.FC = () => {
               </PublicRoute>
             }
           />
-
+          <Route
+            path="/login"
+            element={
+              <PublicRoute>
+                <AuthForm />
+              </PublicRoute>
+            }
+          />
           <Route
             path="/send-password-reset"
             element={
@@ -189,6 +213,13 @@ const App: React.FC = () => {
               </AuthRoute>
             }
           />
+
+          {/* remember, the element prop on a <Route> is literally “what should be rendered when this route matches.
+  But the children (queue, profile, etc.) don’t render directly here, they render into the <Outlet /> that must exist inside Navbar. */}
+          {/* By wrapping only the layout element (Navbar) with AuthRoute, we're saying:
+  "Only render this branch (the Navbar + its children via <Outlet>) if authenticated."
+  The children (like Queue, Profile) inherit that guard automatically because they only exist inside that branch. */}
+          {/* basically, AuthRoute is applied at the layout level. The layout (Navbar) contains <Outlet />. Router injects children into that <Outlet />. Because the layout is guarded, the children are implicitly guarded too. */}
           <Route
             element={
               <AuthRoute>
@@ -197,10 +228,9 @@ const App: React.FC = () => {
             }
           >
             {/*children are RELATIVE, so they render in <Outlet/> as defined in NavBar.tsx*/}
-            {/* <Route path="chat" element={<ChatRoom />} /> */}
-            <Route path="queue" element={<Queue />} />
+            {/* <Route path="queue" element={<Queue />} /> */}
             <Route path="profile" element={<Profile />} />
-            <Route path="aboutus" element={<AboutUs />} />
+            {/* <Route path="aboutus" element={<AboutUs />} /> */}
             <Route
               path="change-password-authenticated"
               element={<ChangePasswordAuthenticated />}
