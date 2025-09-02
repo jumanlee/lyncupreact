@@ -7,7 +7,7 @@ import.meta.env.VITE_DJANGO_URL;
 const Queue: React.FC = () => {
   //consider using atob instead of localstorage for token storage, for later development
   const navigate = useNavigate();
-  const { setIsAuthenticated } = useAuth();
+  const { setIsAuthenticated, isAuthenticated } = useAuth();
 
   const websocketRef = useRef<WebSocket | null>(null);
   const isWebSocketInitialised = useRef<boolean>(false);
@@ -85,7 +85,7 @@ const Queue: React.FC = () => {
     localStorage.removeItem("user_id");
     setIsAuthenticated(false);
 
-    navigate("/");
+    // navigate("/");
   };
 
   useEffect(() => {
@@ -177,17 +177,33 @@ const Queue: React.FC = () => {
             private chatroom with 2-3 people who are predicted, based on past
             interactions and preferences, to align with yours.
           </p>
-
-          <p className="mb-4 text-lg">
-            To get started, make sure your{" "}
-            <button
-              onClick={() => navigate("/profile")}
-              className="text-gray-800 hover:text-gray-1000 font-semibold"
-            >
-              profile
-            </button>{" "}
-            is complete, then click below to enter the queue.
-          </p>
+          {isAuthenticated ? (
+            <>
+              <p className="mb-4 text-lg">
+                To get started, make sure your{" "}
+                <button
+                  onClick={() => navigate("/profile")}
+                  className="text-gray-800 hover:text-gray-1000 font-semibold"
+                >
+                  profile
+                </button>{" "}
+                is complete, then click below to enter the queue.
+              </p>
+            </>
+          ) : (
+            <>
+              <p className="mb-4 text-lg">
+                Please{" "}
+                <button
+                  onClick={() => navigate("/login")}
+                  className="text-gray-800 hover:text-gray-1000 font-semibold"
+                >
+                  log in
+                </button>{" "}
+                before joining the queue.
+              </p>
+            </>
+          )}
         </div>
 
         {!triggeredEventListener ? (
@@ -195,6 +211,11 @@ const Queue: React.FC = () => {
             <button
               className="bg-gray-900 hover:bg-gray-800 text-gray-200 font-semibold py-3 px-6 rounded"
               onClick={() => {
+                if (!isAuthenticated) {
+                  alert("You are not logged in! Please login!");
+                  navigate("/login");
+                  return;
+                }
                 //check if the user's profile is completed, if not, redirect to profile edit page.
                 if (!isProfileCompleted) {
                   alert(

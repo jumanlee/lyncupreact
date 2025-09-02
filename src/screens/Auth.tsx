@@ -128,6 +128,14 @@ const AuthForm: React.FC = () => {
             Forgot your password?
           </button>
         </div>
+        <div className="mt-2 text-center">
+          <button
+            onClick={() => navigate("/")}
+            className="text-gray-600 font-semibold hover:underline"
+          >
+            Back to Home
+          </button>
+        </div>
       </div>
     </div>
   );

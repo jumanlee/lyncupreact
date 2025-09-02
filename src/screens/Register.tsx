@@ -197,7 +197,7 @@ const Register: React.FC = () => {
         {/* back to login */}
         <div className="mt-6 text-center">
           <button
-            onClick={() => navigate("/")}
+            onClick={() => navigate("/login")}
             className="text-gray-900 font-semibold hover:underline"
           >
             Back to login
