@@ -3,8 +3,6 @@ import React from "react";
 // import { useAuth } from "../App";
 
 const PublicNavBar: React.FC = () => {
-
-
   // const { setIsAuthenticated } = useAuth();
   const navigate = useNavigate();
 
@@ -33,11 +31,10 @@ const PublicNavBar: React.FC = () => {
               About Us
             </Link>
 
-            {/* Account has dropdown accordion  */}
-            <div className="relative" >
+            <div className="relative">
               <button
-                className="hover:opacity-80 focus:outline-none text-gray-400 font-semibold"
                 onClick={() => navigate("/login")}
+                className="px-4 py-1.5 rounded-full border-2 border-gray-400 text-gray-400 font-semibold hover:bg-gray-700 hover:text-white transition"
               >
                 Log In
               </button>
