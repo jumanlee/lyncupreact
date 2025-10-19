@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
+import React, { useState, useEffect, useRef, useCallback } from "react";
 import axiosInstance from "../axiom";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../App";
@@ -11,6 +11,13 @@ const Queue: React.FC = () => {
 
   const websocketRef = useRef<WebSocket | null>(null);
   const isWebSocketInitialised = useRef<boolean>(false);
+
+  //websocket connection state to prevent multiple connections in development involving Strict Mode.
+  const isConnectingRef = useRef(false);
+
+  //NOTE: difference between isWebSocketInitalised and isConnectingRef:
+  // isConnectingRef only blocks overlapping connection attempts while the handshake is running; it goes back to false as soon as the socket opens or errors. isWebSocketInitialised stays true for the entire lifetime of the open socket, which keeps connectWebSocket from spinning up duplicates until that socket actually closes.
+
   const [triggeredEventListener, setTriggeredEventListener] =
     useState<boolean>(false);
 
@@ -84,72 +91,102 @@ const Queue: React.FC = () => {
     //also remove the user id
     localStorage.removeItem("user_id");
     setIsAuthenticated(false);
-
-    // navigate("/");
   };
 
-  useEffect(() => {
-    const fetchTokenAndConnectWebSocket = async () => {
-      //this conditional checking is necessary because React's Strict Mode causes useEffect to run twice in development, leading to multiple WebSocket connections and duplicated message event listeners. Note that if I refresh the web page, the isWebSocketInitialised.current becomes false.
-      if (isWebSocketInitialised.current) return;
-      isWebSocketInitialised.current = true;
+  const connectWebSocket = useCallback(async () => {
+    //this conditional checking of isWebSocketInitialised.current is necessary because React's Strict Mode causes useEffect to run twice in development, leading to multiple WebSocket connections and duplicated message event listeners. Note that if I refresh the web page, the isWebSocketInitialised.current becomes false.
+    if (
+      !triggeredEventListener ||
+      isWebSocketInitialised.current ||
+      isConnectingRef.current
+    )
+      return;
 
-      try {
-        // const token = localStorage.getItem('access_token');
-        const token = await getValidAccessToken();
+    //this is to guard against assigning double websockets in development mode with Strict Mode on
+    isConnectingRef.current = true;
 
-        if (!token) {
-          console.error("Token not found in localStorage!");
-          return;
-        }
+    try {
+      const token = await getValidAccessToken();
 
-        // const url = `ws://${import.meta.env.VITE_DJANGO_URL}/ws/queue/?token=${token}`;
-        const url = `${import.meta.env.VITE_WS_URL}/ws/queue/?token=${token}`;
-        websocketRef.current = new WebSocket(url);
-        // websocketRef.current = websocket;
-
-        websocketRef.current.addEventListener("open", () => {
-          console.log("WebSocket connection established");
-        });
-
-        websocketRef.current.addEventListener("message", (event) => {
-          console.log("Message from server:", event.data);
-          const data = JSON.parse(event.data);
-
-          //the double rendering in the console is  caused by React Strict Mode in development. React Strict Mode intentionally renders components twice in development to help identify potential issues like side effects in components or hooks. This double rendering only happens in development mode and does not occur in the production build.
-
-          if (data["room_id"]) {
-            // console.log("entered room_id navigate");
-            navigate("/chat", { state: { room_id: data["room_id"] } });
-          } else {
-            console.log("no room_id!");
-          }
-        });
-
-        websocketRef.current.addEventListener("error", (error) => {
-          console.error("WebSocket error:", error);
-        });
-
-        websocketRef.current.addEventListener("close", () => {
-          console.log("WebSocket connection closed");
-        });
-      } catch (error) {
-        console.error("Failed to validate token or connect WebSocket:", error);
+      if (!token) {
+        isConnectingRef.current = false;
+        setTriggeredEventListener(false);
+        return;
       }
-    };
 
+      const url = `${import.meta.env.VITE_WS_URL}/ws/queue/?token=${token}`;
+      const socket = new WebSocket(url);
+      websocketRef.current = socket;
+
+      socket.addEventListener("open", () => {
+        isWebSocketInitialised.current = true;
+        isConnectingRef.current = false;
+        console.log("WebSocket connection established");
+      });
+
+      socket.addEventListener("message", (event) => {
+        const data = JSON.parse(event.data);
+        if (data.room_id) {
+          navigate("/chat", { state: { room_id: data.room_id } });
+        }
+      });
+
+      socket.addEventListener("error", (error) => {
+        isConnectingRef.current = false;
+        console.error("WebSocket error:", error);
+      });
+
+      socket.addEventListener("close", () => {
+        console.log("WebSocket connection closed");
+        websocketRef.current = null;
+        isWebSocketInitialised.current = false;
+        isConnectingRef.current = false;
+        setTriggeredEventListener(false);
+      });
+    } catch (error) {
+      console.error("Failed to validate token or connect WebSocket:", error);
+      websocketRef.current = null;
+      isWebSocketInitialised.current = false;
+      isConnectingRef.current = false;
+      setTriggeredEventListener(false);
+    }
+  }, [triggeredEventListener, navigate]);
+
+  useEffect(() => {
     if (triggeredEventListener) {
-      fetchTokenAndConnectWebSocket();
+      connectWebSocket();
     }
 
     return () => {
-      // websocket.close();
       if (websocketRef.current) {
         websocketRef.current.close();
-        console.log("WebSocket closed in cleanup");
+        websocketRef.current = null;
+        isWebSocketInitialised.current = false;
+        isConnectingRef.current = false;
       }
     };
-  }, [triggeredEventListener]);
+  }, [triggeredEventListener, connectWebSocket]);
+
+  //handle wakeups e.g. after the phone goes to sleep.
+  //this useEffect does NOT get triggered if phone wakes up after going dark
+  //instead, it's the "visibilitychange" event listener that triggers the connectWebSocket again
+  useEffect(() => {
+    if (!triggeredEventListener) return;
+
+    const retryIfVisible = () => {
+      if (!document.hidden) {
+        connectWebSocket();
+      }
+    };
+
+    document.addEventListener("visibilitychange", retryIfVisible);
+    window.addEventListener("focus", retryIfVisible);
+
+    return () => {
+      document.removeEventListener("visibilitychange", retryIfVisible);
+      window.removeEventListener("focus", retryIfVisible);
+    };
+  }, [triggeredEventListener, connectWebSocket]);
 
   //one-off API call to check if the user's profile is already completed, if not, then redirect to profile edit page.
   useEffect(() => {
